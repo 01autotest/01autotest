@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>登录系统</title>
+    <style type="text/css">
+        .code {
+            background: url(code_bg.jpg);
+            font-family: Arial;
+            font-style: italic;
+            color: blue;
+            font-size: 30px;
+            border: 0;
+            padding: 2px 3px;
+            letter-spacing: 3px;
+            font-weight: bolder;
+            float: left;
+            cursor: pointer;
+            width: 30%;
+{#            height: 60px;#}
+{#            line-height: 60px;#}
+            margin-top: 28px;
+            margin-left: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+    <link rel="stylesheet" href="/static/style_login_both/css/style.css"/>
+    <script language="javascript" type="text/javascript">
+        var code;
+        function createCode() {
+            code = "";
+            var codeLength = 4; //验证码的长度
+            var checkCode = document.getElementById("checkCode");
+            var captcha1 = document.getElementById("captcha1");
+            var codeChars = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'); //所有候选组成验证码的字符，当然也可以用中文的
+            for (var i = 0; i < codeLength; i++) {
+                var charNum = Math.floor(Math.random() * 52);
+                code += codeChars[charNum];
+            }
+            if (checkCode) {
+                checkCode.className = "code";
+                checkCode.innerHTML = code;
+                captcha1.value = code;
+                console.log(captcha1.value)
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div class="login-container">
+    <h1>登录系统</h1>
+
+    <div class="connect">
+        <p>自动化测试平台</p>
+    </div>
+
+    <form action="/login/" method="post" id="loginForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <input type="text" name="username" class="username" placeholder="用户名" autocomplete="off"/>
+        </div>
+        <div>
+            <input type="password" name="password" class="password" placeholder="密码" oncontextmenu="return false" onpaste="return false"/>
+        </div>
+        <div>
+            <input type="text" name="captcha" class="captcha" placeholder="验证码" oncontextmenu="return false" onpaste="return false" style="float: left;width: 50%"/>
+{#            <img height="30px" src="/static/verify_code_imgs/{{ today_str }}/{{ filename }}.png">#}
+{#            <img src="/static/verify_code_imgs/verify_code.png" id="kaptchaImage" alt="验证码" style="float: left;width: 35%;margin-top: 28px;margin-left: 8px" height="40px" onclick="update_captcha()">#}
+            <div class="code" id="checkCode" onclick="createCode()">{{ code }}</div>
+            <input type="text" id="captcha1" name="captcha1" class="captcha" value="{{ code }}" style="display: none"/>
+        </div>
+        <button id="submit" type="submit">登 陆</button>
+    </form>
+
+{#    <a href="/register">#}
+{#        <button type="button" class="register-tis">去注册</button>#}
+{#    </a>#}
+
+    <br><br><br>
+    <a href="/admin">
+        <button type="button" class="register-tis">后台管理</button>
+    </a>
+
+</div>
+
+<script src="/static/style_login_both/js/jquery.min.js"></script>
+<script src="/static/style_login_both/js/common.js"></script>
+<!--背景图片自动更换-->
+<script src="/static/style_login_both/js/supersized.3.2.7.min.js"></script>
+<script src="/static/style_login_both/js/supersized-init.js"></script>
+<!--表单验证-->
+<script src="/static/style_login_both/js/jquery.validate.min.js?var1.14.0"></script>
+<script type="text/javascript">
+    function update_captcha(ele) {
+        $.ajax({
+            url: "/update_captcha/" + Math.floor(Math.random() * 100) + "/",
+            contentType: 'application/json;charset=utf-8',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'}, //csrf
+            type: "POST",
+            async: true,
+            success: function (result) {
+                console.log(result);
+                $('#kaptchaImage').attr('src', '/static/verify_code_imgs/verify_code.png?t=' + result['num']);
+                $('#verify_code_key').val(result['captcha'])
+            },
+            fail: function (result) {
+                debugger
+            }
+        });
+    }
+</script>
+</body>
+</html>

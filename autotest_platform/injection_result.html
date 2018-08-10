@@ -1,0 +1,152 @@
+
+
+
+
+
+
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link href="css/H-ui.min.css" rel="stylesheet" type="text/css" />
+
+<link href="css/H-ui.login.css?v=2.1.0" rel="stylesheet" type="text/css" />
+<LINK rel="Bookmark" href="images/favicon.png"  >
+<LINK rel="Shortcut Icon" href="images/favicon.png" />
+
+
+<link href="iconfont/iconfont.css" rel="stylesheet" type="text/css" />
+<title>
+零壹智慧物业综合管理系统
+</title>
+</head>
+<body class="bodyBg body-login">
+<br><br><br><br>
+<div class="header" align="center">
+零壹智慧物业综合管理系统
+</div>
+<div class="loginWraper"  id ="login-wrapper">
+	<div id="loginform" class="loginBox">
+		<form id="fm1" class="form form-horizontal" action="/yihao01-park-sso/login;jsessionid=218064686DA6852A2022D302A325730C?service=https%3A%2F%2Ftestone.0easy.com%2Fyihao01-ecommunity-cloud" method="post">
+			<div id="huaian-logo" class="lognTop"></div>
+			<div class="logoName"> 物业云平台-PCP</div>
+			<ul class="lognUl">
+				<li>
+					<input type="text" name="username" id="username" class="input-text size-L radius"  placeholder="用户名"/><i></i>
+				</li>
+				<li>
+					<input type="password" name="password" id="password" class="input-text size-L radius" placeholder="密码"/><i></i>
+				</li>
+				<li class="mb10">
+					<input type="text" name="captcha" id="captcha" class="input-text size-L radius" style="width:150px;" placeholder="验证码"/>
+					<i></i>
+					<div class="check-code">
+						<img alt="" id="kaptchaImage" onclick="javascript:getNewPic();"> <a id="change-kaptchaImage-a" href="javascript:;" style="font-size: 14px;" onclick="javascript:getNewPic();">看不清？</a>
+					</div>
+				</li>
+				<li>
+				<label class="login-label">
+					<input type="checkbox" name="rememberMe" id="rememberMe" /> 
+					<span class="remember-me">记住我</span>
+					<div class="show-box" /></div>
+				</label>
+				</li> 
+			</ul>
+			<div style="height: 20px;text-align: center;">
+				<div id="spanInfo" style="color:red;"></div>
+				
+			</div>
+			<input type="hidden" name="lt" value="LT-2202-xylDFs6kUTZBlHgi5qA1OfrMknzxfW-cas01.example.org" />
+			<input type="hidden" name="execution" value="e1s1" />
+			<input type="hidden" name="_eventId" value="submit" />
+			<div class="row" style="text-align:center;margin-top: 0;">
+				<input type="button"  onclick="checkValue();" class="btn btn-success radius size-L" value="登&nbsp;&nbsp;录" id="btnSubmit">
+			</div>
+			<div style="text-align:center;margin-top: 10px;">
+				<a class="login-tip" href="http://www.chromeliulanqi.com/ChromeStandaloneSetup.exe">本系统完美支持Chrome浏览器，如未安装，请点击<span class="strong">下载并安装</span></a>
+			</div>
+	    </form>
+	</div>
+</div>
+
+<!-- 特殊配置huaian登录也内容 -->
+<div class="footer">Copyright 2015 深圳市零壹移动互联系统有限公司    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    粤ICP备14095121号-2
+	<div class="tipsFoot">
+		<span>9529-1411</span>
+		<span>223005</span>
+		<span>深圳路22号</span>
+	</div>
+</div>
+<script type="text/javascript">
+//去掉智慧城市停车云平台登录标志 added by luop on 2017-06-20
+localStorage.removeItem("switchFlag");
+
+onload = function(){
+	if(parent.parent != parent){
+		parent.parent.location.href = location.href;
+	}else if(parent != self){
+		parent.location.href = location.href;
+	}
+	
+	getNewPic();
+}
+function getNewPic() {
+	
+	var url = 'https://testone.0easy.com:443/yihao01-park-sso/kaptcha.jpg?'+ Math.floor(Math.random()*100);
+	
+	var purl = document.location.protocol;	
+	url = url.replace("http:", purl);
+	if (purl == "https:") {
+		url = url.replace(":80/", "/");
+	}
+	
+	document.getElementById("kaptchaImage").src = url;
+}
+
+function checkValue(){
+	var ids ="msg";
+	
+	if(document.getElementById("msg")==null){
+		ids="spanInfo";
+	}
+	if(document.getElementById("username").value.length==0){
+		document.getElementById(ids).innerHTML="请输入用户名";
+		document.getElementById("username").focus();
+		return false;
+	}
+	
+	if(document.getElementById("password").value.length==0){
+		document.getElementById(ids).innerHTML="请输入密码";
+		document.getElementById("password").focus();
+		return false;
+	}
+	
+	if(document.getElementById("captcha").value.length==0){
+		document.getElementById(ids).innerHTML="请输入验证码";
+		document.getElementById("captcha").focus();
+		return false;
+	}
+	document.getElementById('fm1').submit();
+}
+
+document.onkeydown=function(event){
+    var e = event || window.event || arguments.callee.caller.arguments[0];
+    if(e && e.keyCode==27){ // 按 Esc 
+        //要做的事情
+      }
+    if(e && e.keyCode==113){ // 按 F2 
+         //要做的事情
+       }            
+     if(e && e.keyCode==13){ // enter 键
+    	 checkValue();
+    }
+}; 
+
+</script>
+</body>
+</html>

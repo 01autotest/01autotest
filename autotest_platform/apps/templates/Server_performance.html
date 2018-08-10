@@ -1,0 +1,102 @@
+﻿{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>服务器性能参数</title>
+    <style>
+        th {
+            font-weight: strong;
+            color: #000000;
+            background-color: #FFFF00;
+            text-align: center;
+            white-space: nowrap;
+        }
+        td{
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<div>
+    <table border="6" cellspacing="3">
+        <caption style="color: blue"><b>目标服务器(192.168.0.96)性能</b></caption>
+        <thead>
+            <tr>
+                <th>服务器性能</th>
+                <th>当前值</th>
+                <th>服务器性能</th>
+                <th>当前值</th>
+            </tr>
+        </thead>
+
+        <tbody id="tbody">
+            <tr>
+                <td style="white-space: nowrap;" colspan="4">CPU</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">用户进程消耗的CPU时间百分比 %user</td>
+                <td style="white-space: nowrap;">{{ cpu_info.user}}%</td>
+                <td style="white-space: nowrap;">系统进程消耗的CPU时间百分比 %system</td>
+                <td style="white-space: nowrap;">{{ cpu_info.system}}%</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">I/O等待所占CPU时间百分比 %iowait</td>
+                <td style="white-space: nowrap;">{{ cpu_info.iowait}}%</td>
+                <td style="white-space: nowrap;">CPU空闲状态时间百分比 %idle</td>
+                <td style="white-space: nowrap;">{{ cpu_info.idle}}%</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;" colspan="4">内存</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">剩余内存 kbmemfree</td>
+                <td style="white-space: nowrap;">{{ mem_info.free }}</td>
+                <td style="white-space: nowrap;">已用内存 kbmemused</td>
+                <td style="white-space: nowrap;">{{ mem_info.used }}</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">已用内存百分比 %memused</td>
+                <td style="white-space: nowrap;">{{ mem_info.used_pct }}%</td>
+                <td style="white-space: nowrap;"></td>
+                <td style="white-space: nowrap;"></td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;" colspan="4">磁盘</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">每秒向磁盘请求数据次数 tps</td>
+                <td style="white-space: nowrap;">{{ disk_info.tps }}</td>
+                <td style="white-space: nowrap;"></td>
+                <td style="white-space: nowrap;"></td>
+
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">每秒读扇区次数 rd_sec/s</td>
+                <td style="white-space: nowrap;">{{ disk_info.rd_sec }}</td>
+                <td style="white-space: nowrap;">每秒写扇区次数 wr_sec/s</td>
+                <td style="white-space: nowrap;">{{ disk_info.wr_sec }}</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;" colspan="4">网卡流量</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">lo每秒收包数量 rxpck/s</td>
+                <td style="white-space: nowrap;">{{ lo_info.rxpck }}</td>
+                <td style="white-space: nowrap;">lo每秒发包数量 txpck/s</td>
+                <td style="white-space: nowrap;">{{ lo_info.txpck }}</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">em1每秒收包数量 rxpck/s</td>
+                <td style="white-space: nowrap;">{{ eth0_info.rxpck }}</td>
+                <td style="white-space: nowrap;">em1每秒发包数量 txpck/s</td>
+                <td style="white-space: nowrap;">{{ eth0_info.txpck }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

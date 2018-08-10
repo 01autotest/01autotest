@@ -1,0 +1,253 @@
+﻿{% extends "base_interface.html" %}
+
+{% block title %}
+    接口自动化测试报告  <!-- 接口自动化测试报告 author:zh  date:2018-08-01  -->
+{% endblock %}
+
+{% block content %}
+    <style>
+        a {
+            cursor:pointer;
+            text-decoration:none
+        }
+        td {
+            font-size: 12px;
+        }
+        .textarea1 {
+            width: 100%;
+            box-sizing: border-box;
+            border: 0;
+            height: 250px;
+        }
+    </style>
+
+    <div class="row">
+
+        <div class="col-md-1"></div>
+        <div class="col-md-8">
+            <div class="panel panel-primary">
+                <div class="panel-body">
+
+                    <h1 style="font-size: 24px;color:green;">接口自动化测试报告</h1><br>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" data-toggle="modal"  style="margin-left: 20px">测试数据-二维图</button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="" style="margin-left: 70px" ">测试数据-饼状图</button>
+                    </div>
+
+                    <br><br>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th style="text-align: right;display: none"><input type="checkbox" id="checkrev"></th>
+                                <!--th style="text-align: center">#</th>
+                                <th style="text-align: center;display: none">测试套ID</th>
+                                <th style="text-align: center">测试套名称</th>
+                                <th style="text-align: center">包含接口</th>
+                                <th style="text-align: center">负责人</th>
+                                <th style="text-align: center">测试结果</th>
+                                <th style="text-align: left">日期：2018-08-01 09:30:02</th-->
+
+                                <th style="text-align: left">用例：  <font size="4" color="black"> {{ apisuit_counts }}</font></th>
+                                <th style="text-align: left">通过：  <font size="4" color="green"> {{ pass_counts }}</font></th>
+                                <th style="text-align: left">不通过：  <font size="4" color="red"> {{ fail_counts }}</font></th>
+                                <th style="text-align: left">未执行：  <font size="3" color="black"> {{ ng_counts }}</font></th>
+                                <th style="text-align: left">耗时：0s</th>
+                                <!--th style="text-align: left">test.0easy.com</th>
+                                <th style="text-align: left;display: none">接口ID</th>
+                                <th style="text-align: left"></th>
+                                <th style="text-align: left"></th>
+                                <th style="text-align: left"></th-->
+                                <th>
+
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="/testreport_to_email/">   <button type="button" class="btn btn-success btn-sm">发送到邮箱</button></a>
+
+                                </th>
+
+
+                            </tr>
+
+                            </thead>
+
+                            <tbody id="tbody">
+
+
+                            <div class="col-md-5">
+                        <div class="form-group" style="margin: 10px">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">测试套</span>
+
+<select>
+      <option selected="selected">-------------------------------all-------------------------------</option>
+      {% for ss in suit_lists %}
+       <option >    {{ ss.suit_name }}</option>
+      {% endfor %}
+</select>
+
+                                        <span class="input-group-addon">日期</span>
+  <form class="navbar-form" method="get" action="/reportsearch/">
+                                        <select>
+                                           {% for tt in suit_result_lists %}
+                                           <option >    {{ tt.date_time }}</option>
+                                        {% endfor %}
+                                        </select>
+<input type="search" name="suit_id" value={{ tt.date_time }}>
+<button type="submit">搜索</button>
+</form>
+
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--div class="form-group" style="margin: 10px">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">负责人</span>
+                                        <input id="edit_creator" type="text" class="form-control" value="" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                <div class="form-group" style="margin: 10px">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">日期</span>
+                                        <select>
+                                        <!--option selected="selected">-------------------------------all-------------------------------</option>
+                                           {% for tt in suit_result_lists %}
+                                           <option >    {{ tt.date_time }}</option>
+                                        {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div-->
+                 </div>
+
+
+<br><br><br><br>
+
+{% load staticfiles %}
+
+<div class="modal fade" id="edit_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document" style="width: 1480px;z-index: 0">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-md-7">
+
+                        <div class="table-responsive">
+                         <!--   <table class="table table-bordered" id="add_interface_table1"> -->
+
+                                <style>
+                                 table { table-layout:fixed; word-break: break-all; word-wrap: break-word;}
+                                </style>
+                                <thead>
+                                <tr>
+
+                                    <th style="text-align: center">#</th>
+                                    <th style="text-align: center">测试套</th>
+                                    <th style="text-align: center">接口名称</th>
+                                    <th style="text-align: center">方法</th>
+                                    <th style="text-align: center">url</th>
+                                    <th style="text-align: center">参数</th>
+                                    <th style="text-align: center">返回数据</th>
+                                    <th style="text-align: center">断言</th>
+                                    <th style="text-align: center">结果</th>
+                                    <th style="text-align: center">详情</th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="tbody_interface1">
+
+                                {% for rr in apisuit_lists %} {% for tt in suit_result_lists %}
+                                <tr>
+
+                                    <!--td style="width: 30px;white-space: normal;text-align: center;">{{ forloop.counter }}</td-->
+                                     <td style="width: 80px;white-space: nowrap;overflow: hidden;text-align: center;">
+                                        {{ rr.id }}
+                                    </td>
+
+                                     <td style="width: 80px;white-space: nowrap;overflow: hidden;text-align: center;">
+                                            {{ rr.suit_name }}
+                                    </td>
+
+                                    <td style="width: 80px;white-space: nowrap;overflow: hidden;text-align: center;">
+                                          {{ rr.interface_name }}
+                                    </td>
+
+                                    <td style="width:20px;height:25px;overflow-x:hidden;overflow-y:hidden;">
+                                       {{ rr.mode}}
+                                    </td>
+
+                                   <td style="width:100px;white-space: nowrap;overflow-x:hidden;overflow-y:hidden;">
+                                       {{ rr.url}}
+                                    </td>
+
+                                    <td style="width:20px;white-space: nowrap;overflow-x:hidden;overflow-y:hidden;">
+                                       {{ rr.body}}>
+                                    </td>
+
+
+                                     <td style="width:20px;white-space: nowrap;overflow-x:hidden;overflow-y:hidden;">
+                                          {% if rr.id == tt.suit_id %}
+                                             {{ tt.response }}
+                                           {% else %}
+
+                                           {% endif %}
+                                    </td>
+
+                                    <td style="width:20px;white-space: nowrap;overflow-x:hidden;overflow-y:hidden;">
+                                            {{ rr.assert_keywords }}
+                                    </td>
+
+                                    <td style="width:20px;overflow: hidden;text-align: center;" class="ex_status">
+                                           {% if rr.id == tt.suit_id %}
+                                                {% if tt.result == "1" %}
+                                                    <font size="5" color="green"> pass</font>
+                                                {% elif tt.result == "0" %}
+                                                    <font size="5" color="red"> failed</font>
+                                                {% else %}
+                                                    ng
+                                                {% endif %}
+                                           {% endif %}
+                                    </td>
+
+                                    <td style="width: 80px;white-space: nowrap;overflow: hidden;text-align: center;">
+                                     <a target="current" href="/apitestreport/">查看</a>
+                                    </td>
+
+                                </tr>
+                                {% endfor %}{% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+  </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}
+

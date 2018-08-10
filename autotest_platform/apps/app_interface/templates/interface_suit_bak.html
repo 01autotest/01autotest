@@ -1,0 +1,920 @@
+﻿{% extends "base_interface.html" %}
+
+{% block title %}
+    接口测试 - 测试套
+{% endblock %}
+
+{% block content %}
+    <style>
+        a {
+            cursor:pointer;
+            text-decoration:none
+        }
+        td {
+            font-size: 12px;
+        }
+        .textarea1 {
+            width: 100%;
+            box-sizing: border-box;
+            border: 0;
+            height: 250px;
+        }
+    </style>
+    <div class="row">
+
+        <div class="col-md-1"></div>
+        <div class="col-md-8">
+            <div class="panel panel-primary">
+                <div class="panel-body">
+
+                    <h1 style="font-size: 24px;color:green;">接口测试 - 测试套及压力测试</h1><br>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_window"
+                                data-whatever="{{ rec.1 }}" style="margin-left: 20px">添加测试套
+                        </button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target=""
+                                style="margin-left: 70px" onclick="show_public_para()">设置公共参数
+                        </button>
+
+                        {#        <div class="col-lg-5" style="margin-left: 50px">#}
+                        {#            <div class="input-group">#}
+                        {#                <input type="text" class="form-control" name="concurrent_num" placeholder="设置并发数" autocomplete="off">#}
+                        {#                <span class="input-group-btn">#}
+                        {#                    <button type="button" class="btn btn-primary" style="text-shadow: black 5px 3px 3px;" onclick="start_interface_suit()">测试开始</button>#}
+                        {#                </span>#}
+                        {#            </div><!-- /input-group -->#}
+                        {#        </div>#}
+                    </div>
+
+                    <br><br>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;display: none"><input type="checkbox" id="checkrev"></th>
+                                <th style="text-align: center">#</th>
+                                <th style="text-align: center;display: none">测试套ID</th>
+                                <th style="text-align: center">测试套名称</th>
+                                <th style="text-align: center">包含接口</th>
+                                <th style="text-align: center">创建人</th>
+                                <th style="text-align: center">维护人</th>
+                                <th style="text-align: center">操作</th>
+                                <th style="text-align: center;display: none">接口ID</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="tbody">
+                            {% load pagination_tags %}
+                            {% autopaginate suits 9 %}
+                            {% for rec in suits %}
+                                <tr>
+                                    <td style="width: 30px;text-align: center;display: none"><input type="checkbox" name="check1" value="{{ forloop.counter }}"></td>
+                                    <td style="width: 70px;white-space: normal;text-align: center;">{{ rec.6 }}</td>
+                                    <td style="width: 50px;text-align: center;display: none" id="ids">{{ rec.0 }}</td>
+                                    <td style="width: 170px;font-size: 12px">{{ rec.1 }}</td>
+                                    <td style="max-width: 370px;white-space:normal;font-size: 12px">{{ rec.3 | truncatechars:"40" }}</td>
+                                    <td style="width:100px;text-align: center;font-size: 12px">{{ rec.4 }}</td>
+                                    <td style="width:100px;text-align: center;font-size: 12px">{{ rec.5 }}</td>
+                                    <!-- 操作 -->
+                                    <td id="operations" style="width: 160px;text-align: center;">
+                                        <div class="btn-group btn-group-xs">
+                                            <button type="button" class="btn btn-primary"
+                                                    onclick="start_interface_suit(this)" style="display: none">执行
+                                            </button>
+                                            <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                    data-target="" data-whatever="{{ rec.suit_name }}"
+                                                    onclick="show_edit_suit(this)">编辑 / 执行
+                                            </button>
+                                            <button type="button" class="btn btn-danger" data-toggle="modal"
+                                                    data-target="#del_window" data-whatever="{{ rec.0 }}_{{ rec.1 }}">删除
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td style="width: 50px;text-align: center;display: none" id="interface_ids">{{ rec.6 }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                        {% paginate %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{#        <!-- 日志窗口 -->#}
+{#        <div class="col-md-5">#}
+{#            <div class="panel panel-primary">#}
+{#                <div class="panel-heading">#}
+{#                    <h3 class="panel-title">日志输出</h3>#}
+{#                </div>#}
+{#                <div class="panel-body" style="background:#000;">#}
+{#                    <textarea id="textarea" class="textarea" style="background:#000; color:yellow;"></textarea>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+
+    </div>
+
+    <!-- 公共参数 -->
+    {% include "include_public_para.html" %}
+
+    <!-- 添加测试套 -->
+    {% include "include_suit_add_window.html" %}
+
+    <!-- 接口列表 ，通过z-index控制模态框层级，最上层为9999 -->
+    <div class="modal fade" id="select_interface_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         style="height: 920px;margin-top: -25px;z-index: 9999">
+        <div class="modal-dialog" role="document" style="width: 1100px">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">添加接口</h4>
+                </div>
+
+                <div class="modal-body">
+                    <table id="blocks" class="table table-hover" style="font-size: 12px">
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">编号</th>
+                            <th style="text-align: center">模块</th>
+                            <th style="text-align: center;display: none">ID</th>
+                            <th style="text-align: center">接口名称</th>
+                            <th style="text-align: center">URL</th>
+                            <th style="text-align: center">操作</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="tbody">
+                        {% for rec in interfaces_all %}
+                            <tr>
+                                <td style="width: 50px;white-space: normal;text-align: center;">{{ forloop.counter }}</td>
+                                <td style="width: 60px;white-space: nowrap;text-align: center;overflow: hidden">{{ rec.0 }}</td>
+                                <td style="width: 50px;text-align: center;display: none" id="ids">{{ rec.1 }}</td>
+                                <td style="width: 300px;">{{ rec.2 }}</td>
+                                <td style="max-width: 100px;white-space: nowrap;overflow: hidden">{{ rec.3 }}</td>
+                                <td style="width: 100px;text-align: center">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="select_suit_interfaces(this)">选择</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div id="pagiDiv" align="right" style="text-align:center;margin-top: -20px">
+                        <span id="spanFirst">首页</span>&nbsp;&nbsp;
+                        <span id="spanPre">上一页</span>&nbsp;&nbsp;
+                        <span id="spanNext">下一页</span>&nbsp;&nbsp;
+                        <span id="spanLast">末页</span>&nbsp;&nbsp;
+                        第&nbsp;<span id="spanPageNum"></span>&nbsp;/&nbsp;<span id="spanTotalPage"></span>&nbsp;页
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑测试套 -->
+    {% include "include_suit_edit_window.html" %}
+
+    <!-- 删除测试套 -->
+    <div class="modal fade" id="del_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h1 class="modal-title" style="font-size: 20px;color:green;"></h1>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" href="javascript:void(0)"
+                            onclick="del_suit(this)">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 接口参数 -->
+    {% include "include_suit_para_edit_window.html" %}
+
+    <script type="text/javascript">
+        //全选
+        $(function () {
+            $("#checkall").click(function () {
+                if (this.checked) {
+                    $("input[name='check1']").attr('checked', true);
+                } else {
+                    $("input[name='check1']").attr('checked', false);
+                }
+            });
+            $("#checkrev").click(function () {
+                //实现反选功能
+                $('[name=check1]:checkbox').each(function () {
+                    this.checked = !this.checked;
+                });
+            });
+        });
+
+        //--------------------------删除测试套--------------------------
+
+        $('#del_window').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // 触发事件的按钮
+            var recipient = button.data('whatever');// 解析出data-whatever内容
+            console.log(recipient);
+            var modal = $(this);
+            modal.find('.modal-title').text('即将删除接口： ' + recipient);
+            modal.find('.modal-body input').val(recipient)
+        });
+
+        function del_suit(ele) {
+            id_interface = $('#del_window').find('.modal-title')[0].textContent;
+            id_tmp = id_interface.split("_")[0];
+            id1 = id_tmp.split("：")[1];
+            console.log(id1);
+
+            $.ajax({
+                url: "/del_suit",
+                data: JSON.stringify({ // JSON格式封装数据
+                    id1: id1,
+                }),
+                contentType: 'application/json;charset=utf-8',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+                    window.location.reload(true);
+                    console.log(result);
+                },
+                fail: function (result) {
+                    debugger
+                }
+            });
+        }
+
+        //--------------------------添加测试套--------------------------
+
+        $('#add_window').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // 触发事件的按钮
+            $('#tbody_interface').empty();
+            tmp_append = '<tr>' +
+                    '<td style="width: 80px;text-align: center;">' +
+                    '<a data-toggle="modal" data-whatever="添加" data-target="#select_interface_window">选择接口</a>' +
+                    '</td>' +
+                    '<td style="white-space: normal;text-align: center;" class="interface_name"></td>' +
+                    '<td style="width: 70px;text-align: center;">' +
+                    '<a onclick="add_row(this)"> +</a>' +
+                    '</td>' +
+                    '<td style="width: 70px;text-align: center;">' +
+                    '<a disabled="disabled" onclick="del_row(this)"> -</a>' +
+                    '</td>' +
+                    '</tr>';
+            $('#tbody_interface').append(tmp_append);
+        });
+
+        function add_suit(ele) {
+            suit_list = [];
+            add_name = $('#add_name')[0].value;
+            add_creator = $('#add_creator')[0].value;
+            add_maintainer = $('#add_maintainer')[0].value;
+            add_order = $('#add_order')[0].value;
+
+            interface_names = [];
+            tmp = document.getElementsByClassName("interface_name");
+            for (var i = 0; i < tmp.length; i++) {   //循环遍历所有的tr行
+                interface_names.push(tmp[i].textContent);
+            }
+
+            suit_list.push(add_name, add_creator, add_maintainer, interface_names, add_order);  //通过元素获取当前行，再获取当前行的元素
+            console.log(suit_list);
+
+            $.ajax({
+                url: "/add_suit/",
+                data: JSON.stringify({ // JSON格式封装数据
+                    suit_list: suit_list,
+                }),
+                contentType: 'application/json;charset=utf-8',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+                    window.location.href = "http://192.168.2.219:1013/interface/interface_suit.html";
+                    console.log(result);
+                },
+                fail: function (result) {
+                    debugger
+                }
+            });
+        }
+
+        $('#select_interface_window').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // 触发事件的按钮
+            var row_num = $(event.relatedTarget).parent().parent()[0].rowIndex; //获取行号
+            var recipient = button.data('whatever');// 解析出data-whatever内容
+            var modal = $(this);
+            modal.find('.modal-title').text(recipient + '：选择接口_' + row_num);
+        });
+
+        function add_row(ele) {
+            var root = document.getElementById("tbody_interface");
+            row_num = $(ele).parent().parent()[0].rowIndex;
+            var newRow = root.insertRow(row_num);
+
+            var newCell0 = newRow.insertCell();
+            var newCell1 = newRow.insertCell();
+            var newCell2 = newRow.insertCell();
+            var newCell3 = newRow.insertCell();
+
+            newCell0.innerHTML = '<a data-toggle="modal" data-whatever="添加" data-target="#select_interface_window">选择接口</a>';
+            newCell0.style = "width: 80px;text-align: center;";
+            newCell1.innerHTML = '';
+            newCell1.style = "white-space: normal;text-align: center;overflow: hidden;";
+            newCell1.className = "interface_name";
+            newCell2.innerHTML = '<a onclick="add_row(this)"> +</a>';
+            newCell2.style = "width: 70px;text-align: center;";
+            newCell3.innerHTML = '<a onclick="del_row(this)"> -</a>';
+            newCell3.style = "width: 70px;text-align: center;";
+        }
+
+        function add_row1(ele) {
+            var root = document.getElementById("tbody_interface1");
+            row_num = $(ele).parent().parent()[0].rowIndex;
+            var newRow = root.insertRow(row_num);
+
+            var newCell0 = newRow.insertCell();
+            var newCell1 = newRow.insertCell();
+            var newCell2 = newRow.insertCell();
+            var newCell3 = newRow.insertCell();
+            var newCell4 = newRow.insertCell();
+            var newCell5 = newRow.insertCell();
+            var newCell6 = newRow.insertCell();
+            var newCell7 = newRow.insertCell();
+
+            newCell0.innerHTML = '<a data-toggle="modal" data-whatever="编辑" data-target="#select_interface_window">选择接口</a>';
+            newCell0.style = "width: 80px;text-align: center;";
+            newCell1.innerHTML = '';
+            newCell1.style = "white-space: normal;text-align: center;overflow: hidden;display: none";
+            newCell1.className = "suit_interface_id";
+            newCell2.innerHTML = '';
+            newCell2.style = "white-space: normal;text-align: center;overflow: hidden;display: none";
+            newCell2.className = "suit_interface_id1";
+            newCell3.innerHTML = '';
+            newCell3.style = "white-space: normal;text-align: center;overflow: hidden;";
+            newCell3.className = "interface_name1";
+            newCell4.innerHTML = '<a data-toggle="modal" data-target="" onclick="show_edit_para_suit(this)">接口参数</a>';
+            newCell4.style = style = "width: 80px;white-space: nowrap;overflow: hidden;text-align: center;";
+            newCell5.innerHTML = '<a onclick="add_row1(this)"> +</a>';
+            newCell5.style = "width: 70px;text-align: center;";
+            newCell6.innerHTML = '<a onclick="del_row1(this)"> -</a>';
+            newCell6.style = "width: 70px;text-align: center;";
+            newCell7.innerHTML = '';
+            newCell7.style = "width: 70px;text-align: center;";
+            newCell7.className = "ex_status";
+        }
+
+        function del_row(ele) {
+            root = document.getElementById("add_interface_table");
+            row_num = $(ele).parent().parent()[0].rowIndex;
+            root.deleteRow(row_num);
+        }
+
+        function del_row1(ele) {
+            root = document.getElementById("add_interface_table1");
+            row_num = $(ele).parent().parent()[0].rowIndex;
+            id2 = $(ele).parent().parent().find('td')[1].textContent;
+            id3 = $(ele).parent().parent().find('td')[2].textContent;
+
+            if (id2 == '' && id3 == '') {
+                del_id = ''
+            }
+            else if (id2 != '') {
+                del_id = id2
+            }
+            else if (id3 != '') {
+                del_id = id3
+            }
+
+            $.ajax({
+                url: "/del_row1/",
+                data: JSON.stringify({ // JSON格式封装数据
+                    del_id: del_id,
+                }),
+                contentType: 'application/json;charset=utf-8',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+                    root.deleteRow(row_num);
+                },
+                fail: function (result) {
+                    debugger
+                }
+            });
+        }
+
+        //--------------------------编辑测试套--------------------------
+
+        function show_edit_suit(ele) {
+            $('.textarea1').empty();
+            id1 = $(ele).parent().parent().parent().find('td')[2].textContent;
+            suit_name1 = $(ele).parent().parent().parent().find('td')[3].textContent;
+            console.log([id1, suit_name1]);
+
+            $.ajax({
+                url: "/show_edit_suit",
+                data: JSON.stringify({ // JSON格式封装数据
+                    id1: id1,
+                    suit_name1: suit_name1,
+                }),
+                contentType: 'application/json;charset=utf-8',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+                    $('#edit_window').find('.modal-title').text('编辑测试套：' + id1 + '_' + suit_name1);
+                    $('#edit_window').find('#edit_name').val(result['suit_name']);
+                    $('#edit_window').find('#edit_creator').val(result['creator']);
+                    $('#edit_window').find('#edit_maintainer').val(result['maintainer']);
+                    $('#edit_window').find('#edit_order').val(result['orders']);
+
+                    $('#tbody_interface1').empty();
+                    interface_names = result['interface_name'].split(',');
+                    for (var i = 0; i < interface_names.length; i++) {   //循环遍历所有的tr行
+                        if (interface_names[i].substring(0, 14) == 'suit_interface') {     //如果是新建的接口，就不传id，否则就传id
+                            tmp_append = '<tr>' +
+                                    '<td style="width: 80px;text-align: center;">' +
+                                    '<a data-toggle="modal" data-whatever="编辑" data-target="#select_interface_window">选择接口</a>' +
+                                    '</td>' +
+                                    '<td style="white-space: normal;text-align: center;overflow: hidden;display: none" class="suit_interface_id">' + result['id_list'][i] + '</td>' +
+                                    '<td style="white-space: normal;text-align: center;overflow: hidden;display: none" class="suit_interface_id1">' + result['id_list'][i] + '</td>' +
+                                    '<td style="white-space: normal;text-align: center;overflow: hidden;" class="interface_name1">' + interface_names[i] + '</td>' +
+                                    '<td style="width: 80px;white-space: nowrap;overflow: hidden;text-align: center;">' +
+                                    '<a data-toggle="modal" data-target="" onclick="show_edit_para_suit(this)">接口参数</a>' +
+                                    '</td>' +
+                                    '<td style="width: 70px;text-align: center;">' +
+                                    '<a onclick="add_row1(this)"> +</a>' +
+                                    '</td>' +
+                                    '<td style="width: 70px;text-align: center;">' +
+                                    '<a onclick="del_row1(this)"> -</a>' +
+                                    '</td>' +
+                                    '<td style="width: 70px;text-align: center;" class="ex_status"></td>' +
+                                    '</tr>';
+                        }
+                        else {
+                            tmp_append = '<tr>' +
+                                    '<td style="width: 80px;text-align: center;">' +
+                                    '<a data-toggle="modal" data-whatever="编辑" data-target="#select_interface_window">选择接口</a>' +
+                                    '</td>' +
+                                    '<td style="white-space: normal;text-align: center;overflow: hidden;display: none" class="suit_interface_id"></td>' +
+                                    '<td style="white-space: normal;text-align: center;overflow: hidden;display: none" class="suit_interface_id1"></td>' +
+                                    '<td style="white-space: normal;text-align: center;overflow: hidden;" class="interface_name1">' + interface_names[i] + '</td>' +
+                                    '<td style="width: 80px;white-space: nowrap;overflow: hidden;text-align: center;">' +
+                                    '<a data-toggle="modal" data-target="" onclick="show_edit_para_suit(this)">接口参数</a>' +
+                                    '</td>' +
+                                    '<td style="width: 70px;text-align: center;">' +
+                                    '<a onclick="add_row1(this)"> +</a>' +
+                                    '</td>' +
+                                    '<td style="width: 70px;text-align: center;">' +
+                                    '<a onclick="del_row1(this)"> -</a>' +
+                                    '</td>' +
+                                    '<td style="width: 70px;text-align: center;" class="ex_status"></td>' +
+                                    '</tr>';
+                        }
+                        $('#tbody_interface1').append(tmp_append);
+                    }
+                    $('#edit_window').modal();     //打开模态框
+                },
+                fail: function (result) {
+                    debugger
+                }
+            });
+        }
+
+        function select_suit_interfaces(ele) {
+            table_name = $(ele).parent().parent().find('td')[1].textContent;
+            id1 = $(ele).parent().parent().find('td')[2].textContent;
+            name1 = $(ele).parent().parent().find('td')[3].textContent;
+            row_num_tmp = $('#select_interface_window').find('.modal-title').text();
+            row_num = row_num_tmp.split('_')[1];    //接口列表的行号，需减1，因为索引从0开始，下面的循环也是从0开始
+            row_num = parseInt(row_num) - 1;
+            row_num = row_num.toString();
+            console.log([table_name, id1, name1, row_num]);
+
+            head_line = $(ele).parent().parent().parent().parent().parent().parent().find('h4')[0].textContent;
+            flag = head_line.substring(0, 2);
+            console.log(flag);
+
+            if (flag == '添加') {
+                tmp = document.getElementsByClassName("interface_name");
+            }
+            else if (flag == '编辑') {
+                tmp = document.getElementsByClassName("interface_name1");
+            }
+            suit_interface_id = document.getElementsByClassName("suit_interface_id");
+            suit_interface_id1 = document.getElementsByClassName("suit_interface_id1");
+            for (var i = 0; i < tmp.length; i++) {   //循环遍历所有的tr行
+                if (i == row_num) {
+                    console.log([tmp[row_num],suit_interface_id[row_num],suit_interface_id1[row_num]]);
+                    tmp[row_num].innerHTML = table_name + '_' + id1 + '_' + name1;
+                    suit_interface_id[row_num].innerHTML = '';  //修改接口名称后，清空该行的suit_interface_id
+                    suit_interface_id1[row_num].innerHTML = '';  //修改接口名称后，清空该行的suit_interface_id
+                }
+            }
+        }
+
+        function save_edit_suit(ele) {
+            id_interface = $('#edit_window').find('.modal-title')[0].textContent;
+            id = id_interface.split("_")[0];
+            id = id.split("：")[1];
+            edit_name = $('#edit_window').find('#edit_name')[0].value;
+            creator = $('#edit_window').find('#edit_creator')[0].value;
+            maintainer = $('#edit_window').find('#edit_maintainer')[0].value;
+            edit_order = $('#edit_window').find('#edit_order')[0].value;
+
+            interface_name = [];
+            tmp = document.getElementsByClassName("interface_name1");
+            for (var i = 0; i < tmp.length; i++) {   //循环遍历所有的tr行
+                interface_name.push(tmp[i].textContent);
+            }
+
+            suit_info = [id, edit_name, creator, maintainer, interface_name, edit_order];
+            console.log(suit_info);
+
+            $.ajax({
+                url: "/save_edit_suit",
+                data: JSON.stringify({ // JSON格式封装数据
+                    suit_info: suit_info,
+                }),
+                contentType: 'application/json;charset=utf-8',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+                    window.location.reload(true);
+                    console.log(result);
+                },
+                fail: function (result) {
+                    debugger
+                }
+            });
+        }
+
+        function format_body_edit(ele) {
+            $('#edit_para_window').find('.formated_str').empty();
+            $('#edit_para_window').find('.formated_dict').empty();
+            original_body = $('#edit_para_window').find('.original_body')[0].value;
+            console.log(original_body);
+
+            $.ajax({
+                url: "/format_body_edit/",
+                data: JSON.stringify({ // JSON格式封装数据
+                    original_body: original_body,
+                }),
+                contentType: 'application/json;charset=utf-8',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+                    $('#edit_para_window').find('.formated_str').append(decodeURIComponent(result['json_str']));
+                    $('#edit_para_window').find('.formated_dict').append(decodeURIComponent(result['json_dict']));
+                },
+                fail: function (result) {
+                    debugger
+                }
+            });
+        }
+
+        //--------------------------编辑参数--------------------------
+        $("#edit_para_window").on("hidden.bs.model",function(){
+            $(this).find(".original_body").html('');
+            $(this).removeData();
+        });
+
+        function show_edit_para_suit(ele) {
+            tmp = $(ele).parent().parent().find('td')[3].textContent;
+            console.log(tmp);
+            if (tmp.indexOf('suit_interface') > -1) {
+                table_name = 'suit_interface';
+                id1 = tmp.split('_')[2];
+                interface_name1 = tmp.split('_')[3];
+            }
+            else {
+                table_name = tmp.split('_')[0];
+                id1 = tmp.split('_')[1];
+                interface_name1 = tmp.split('_')[2];
+            }
+            id2 = $(ele).parent().parent().find('td')[1].textContent;
+            id3 = $(ele).parent().parent().find('td')[2].textContent;
+
+            //行号
+            var root = document.getElementById("tbody_interface1");
+            row_num = $(ele).parent().parent()[0].rowIndex;
+
+            console.log([table_name, id1, interface_name1, id2, row_num]);
+
+            $.ajax({
+                url: "/show_edit_para_suit/",
+                data: JSON.stringify({ // JSON格式封装数据
+                    table_name: table_name,
+                    id1: id1,
+                    interface_name1: interface_name1,
+                    id2: id2,
+                }),
+                contentType: 'application/json;charset=utf-8',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+{#                    original_body = $('#edit_para_window').find('.original_body')[0].value;#}
+{#                    console.log(original_body);#}
+                    //title
+                    if (id2 != '') {
+                        $('#edit_para_window').find('.modal-title').text('接口参数：' + id2 + '_' + interface_name1);
+                    }
+                    else if (id3 != '') {
+                        $('#edit_para_window').find('.modal-title').text('接口参数：' + id3 + '_' + interface_name1);
+                    }
+                    else if (id2 == '' && id3 == '') {
+                        $('#edit_para_window').find('.modal-title').text('接口参数：new_' + interface_name1);
+                    }
+                    $('#edit_para_window').find('.modal-title1').text(tmp);
+                    $('#edit_para_window').find('.modal-title2').text(row_num);
+                    //head
+                    $('#edit_para_window').find('#head').val(result['head']);
+                    //body
+                    $('#edit_para_window').find('.original_body').empty().append(decodeURIComponent(result['para_str']));
+                    $('#edit_para_window').find('.formated_str').empty().append(decodeURIComponent(result['para_str']));
+                    $('#edit_para_window').find('.formated_dict').empty().append(decodeURIComponent(result['para_dict']));
+                    //mode
+                    $('#edit_para_window').find('#GET').attr('class', 'btn btn-warning');    //清除其他模态框中的选中状态
+                    $('#edit_para_window').find('#POST').attr('class', 'btn btn-warning');
+                    $('#edit_para_window').find('#UPLOAD_PIC').attr('class', 'btn btn-warning');
+                    if (result['mode'] == 'GET') {
+                        $('#edit_para_window').find('#GET').attr('class', 'btn btn-warning active');
+                        $('#edit_para_window').find('#GET1').attr('checked', true);
+                    }
+                    else if (result['mode'] == 'POST') {
+                        $('#edit_para_window').find('#POST').attr('class', 'btn btn-warning active');
+                        $('#edit_para_window').find('#POST1').attr('checked', true);
+                    }
+                    else if (result['mode'] == 'UPLOAD_PIC') {
+                        $('#edit_para_window').find('#UPLOAD_PIC').attr('class', 'btn btn-warning active');
+                        $('#edit_para_window').find('#UPLOAD_PIC1').attr('checked', true);
+                    }
+
+                    $('#edit_para_window').modal();     //打开模态框
+
+                },
+                fail: function (result) {
+                    debugger
+                }
+            });
+        }
+
+        function save_edit_para_suit(ele) {
+            //suit_head
+            suit_head = $('#edit_window').find('.modal-title')[0].textContent;
+            suit_head = suit_head.split("：")[1];
+            //id、interface_name
+            id_interface = $('#edit_para_window').find('.modal-title')[0].textContent;
+            id = id_interface.split("_")[0];
+            id = id.split("：")[1];
+            interface_name = id_interface.split("_")[1];
+            //tmp
+            interface_head = $('#edit_para_window').find('.modal-title1')[0].textContent;
+            //para
+            formated_dict = $('#edit_para_window').find('.formated_dict')[0].value;
+            //head
+            head1 = $('#edit_para_window').find('#head')[0].value;
+            //mode
+            mode = "";
+            radio = document.getElementsByName("mode");
+            for (var i = 0; i < radio.length; i++) {
+                if (radio[i].checked == true) {
+                    mode = radio[i].value;
+                    break;
+                }
+            }
+            para_info = [id, interface_name, formated_dict, mode, head1, suit_head, interface_head];
+            console.log(para_info);
+
+            //行号
+            row_num = $('#edit_para_window').find('.modal-title2')[0].textContent;
+            row_num = parseInt(row_num);
+            console.log(row_num);
+
+            //当前行的接口名称
+            var tmp_interface_name = $('.interface_name1')[row_num - 1].textContent;
+            console.log(tmp_interface_name);
+
+
+            $.ajax({
+                url: "/save_edit_para_suit",
+                data: JSON.stringify({ // JSON格式封装数据
+                    para_info: para_info,
+                }),
+                contentType: 'application/json;charset=utf-8',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+                    console.log($('.interface_name1')[row_num - 1]);
+                    $('.suit_interface_id').eq([row_num - 1]).text(result['id']);
+                    $('.suit_interface_id1').eq([row_num - 1]).text(result['id']);
+                    $('.interface_name1').eq([row_num - 1]).text(result['interface_name']);
+                },
+                fail: function (result) {
+                    debugger
+                }
+            });
+        }
+
+        //--------------------------测试开始--------------------------
+
+        function start_interface_suit(ele) {
+            $('.textarea').empty();
+            suit_id1 = $(ele).parent().parent().parent().find('td')[2].textContent;
+            suit_name1 = $(ele).parent().parent().parent().find('td')[3].textContent;
+            console.log(suit_id1, suit_name1);
+            $('.textarea').append('正在执行测试套： ' + suit_id1 + '_' + suit_name1 + '\n');
+            $('.textarea').append('请稍等... \n');
+
+            $.ajax({
+                url: "/start_interface_suit/",
+                data: JSON.stringify({ //JSON格式封装数据
+                    suit_id1: suit_id1,
+                }),
+                contentType: 'application/json',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+                    $('.textarea').append('执行完成！\n\n');
+                    $('.textarea').append('【执行结果】：\n');
+                    $('.textarea').append(result);
+                    console.log(result);
+                },
+                fail: function (result) {
+                }
+            });
+        }
+
+        is_empty = true;
+        function start_interface_suit1(ele) {
+            if(is_empty == true) {
+                row_index = 0;  //当前行号，每次点击执行，计数都重新置0
+                $('.textarea1').empty().append('测试开始，请稍等... \n');
+                $('.ex_status').empty();
+                is_empty = false;
+            }
+            suit_head = $('#edit_window').find('.modal-title')[0].textContent;
+            suit_head = suit_head.split("：")[1];
+            suit_id1 = suit_head.split("_")[0];
+            suit_name1 = suit_head.split("_")[1];
+            console.log(suit_id1, suit_name1);
+
+            var id_list = document.getElementsByClassName('suit_interface_id');
+            row_num = id_list.length;   //总行数
+            cur_id = id_list[row_index].textContent;
+            console.log(row_num,cur_id);
+
+            j = 0;
+            $('.ex_status').each(function () {
+                if (j == row_index) {
+                    $(this).append('<img src="/static/gif/loading/5-120604091319-50.gif">');
+                    return false;    //跳出循环
+                }
+                else {
+                    j += 1;
+                }
+            });
+
+            $.ajax({
+                url: "/start_interface_suit1/",
+                data: JSON.stringify({ //JSON格式封装数据
+                    cur_id: cur_id
+                }),
+                contentType: 'application/json',
+                type: "POST",
+                traditional: true, // 需要传递列表、字典时加上这句
+                success: function (result) {
+                    if (result.indexOf('Traceback') > -1) {
+                        //回调状态栏
+                        j = 0;
+                        $('.ex_status').each(function () {
+                            if (j == row_index) {
+                                $(this).empty().append('执行失败');
+                                return false;    //跳出循环
+                            }
+                            else {
+                                j += 1;
+                            }
+                        });
+                        //回调textarea
+                        $('.textarea1').append('\n发现程序bug，报错信息如下：\n\n');
+                        $('.textarea1').append(result);
+                        is_empty = true;
+                        console.log(is_empty);
+                    }
+                    else {
+                        //回调状态栏
+                        j = 0;
+                        $('.ex_status').each(function () {
+                            if (j == row_index) {
+                                $(this).empty().append('执行完成');
+                                return false;    //跳出循环
+                            }
+                            else {
+                                j += 1;
+                            }
+                        });
+                        //递归
+                        if (row_index < row_num - 1) {
+                            row_index += 1;
+                            start_interface_suit1(ele)
+                        }
+                        else {
+                            is_empty = true;
+                            console.log(is_empty);
+                            //回调textarea
+                            $('.textarea1').append('\n测试完成，最后一次执行结果：\n\n');
+                            $('.textarea1').append(result);
+                        }
+                    }
+                },
+                fail: function (result) {
+                }
+            });
+        }
+
+        {#    function start_interface_suit() {#}
+        {#        $('.textarea').empty();#}
+        {#        var obj = document.getElementsByName("check1");#}
+        {#        id_list = [];#}
+        {#        for (k in obj) {#}
+        {#            if (obj[k].checked){#}
+        {#                suit_id = $(obj[k]).parent().parent().find('td')[2].textContent;#}
+        {#                id_list.push(suit_id);#}
+        {#            }#}
+        {#        }#}
+        {##}
+        {#        concurrents = document.getElementsByName("concurrent_num")[0].value;#}
+        {##}
+        {#        console.log([concurrents,id_list]);#}
+        {##}
+        {#        for (var i = 0; i < id_list.length; i++) {#}
+        {#            $.ajax({#}
+        {#                url: "http://192.168.2.219:1013/start_interface_suit/",#}
+        {#                data: JSON.stringify({ //JSON格式封装数据#}
+        {#                    suit_id1: id_list[i],#}
+        {#                    concurrent_num: concurrents,#}
+        {#                }),#}
+        {#                contentType: 'application/json',#}
+        {#                type: "POST",#}
+        {#                traditional: true, // 需要传递列表、字典时加上这句#}
+        {#                success: function (result) {#}
+        {#                    $('.textarea').append(result);#}
+        {#                    console.log(result);#}
+        {#                },#}
+        {#                fail: function (result) {#}
+        {#                }#}
+        {#            });#}
+        {#        }#}
+        {#    }#}
+
+        {#    function start_interface_suit() {#}
+        {#        $('.textarea').empty();#}
+        {#        var obj = document.getElementsByName("check1");#}
+        {#        id_list = [];#}
+        {#        for (k in obj) {#}
+        {#            if (obj[k].checked){#}
+        {#                suit_id = $(obj[k]).parent().parent().find('td')[2].textContent;#}
+        {#                interface_id_tmp = $(obj[k]).parent().parent().find('td')[8].textContent;#}
+        {#                interface_ids = interface_id_tmp.split(",");#}
+        {#                id_list.push([suit_id,interface_ids]);#}
+        {#            }#}
+        {#        }#}
+        {##}
+        {#        concurrents = document.getElementsByName("concurrent_num")[0].value;#}
+        {##}
+        {#        console.log([concurrents,id_list]);#}
+        {##}
+        {#        for (var i = 0; i < id_list.length; i++) {#}
+        {#            for (var j = 0; j < id_list[i][1].length; j++) {#}
+        {#                $.ajax({#}
+        {#                    url: "http://192.168.2.219:1013/start_interface_suit/",#}
+        {#                    data: JSON.stringify({ //JSON格式封装数据#}
+        {#                        suit_id1: id_list[i][0],#}
+        {#                        interface_id1:id_list[i][1][j],#}
+        {#                        concurrent_num: concurrents,#}
+        {#                    }),#}
+        {#                    contentType: 'application/json',#}
+        {#                    type: "POST",#}
+        {#                    traditional: true, // 需要传递列表、字典时加上这句#}
+        {#                    success: function (result) {#}
+        {#                        $('.textarea').append(result);#}
+        {#                        console.log(result);#}
+        {#                    },#}
+        {#                    fail: function (result) {#}
+        {#                    }#}
+        {#                });#}
+        {#            }#}
+        {#        }#}
+        {#    }#}
+
+    </script>
+
+{% endblock %}

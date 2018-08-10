@@ -1,0 +1,226 @@
+{% load staticfiles %}
+<div class="modal fade" id="edit_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document" style="width: 1500px;margin-left: 70px">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">编辑接口</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" style="background-color: blanchedalmond;font-size: 12px">页面切换</span>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-warning active" id="no" style="font-size: 12px" onclick="show_no1()">
+                                            <input type="radio" class="is_no" name="is_no" id="no1" value="0" checked="checked">接口基本信息
+                                        </label>
+                                        <label class="btn btn-warning" id="yes" style="font-size: 12px" onclick="show_yes1()">
+                                            <input type="radio" class="is_yes" name="is_yes" id="yes1" value="1">接口返回参数
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="no1_div1">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" style="font-size: 12px">接口名称</span>
+                                    <input id="edit_name" type="text" class="form-control" value="" required="" style="font-size: 12px">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" style="font-size: 12px">顺序</span>
+                                    <input id="edit_order" type="text" class="form-control" required="" style="font-size: 12px" oninvalid="setCustomValidity('请输入数字');" oninput="setCustomValidity('');" onkeyup="this.value=this.value.replace(/\D/g,'')">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" style="font-size: 12px">负责人</span>
+                                    <input id="edit_creator" type="text" class="form-control" value="" required="" style="font-size: 12px">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" style="font-size: 12px">头信息</span>
+                                    <textarea id="head" name="head" rows="6" style="width: 255px;font-size: 12px" placeholder='说明：&#10;1、格式：{"key1":"value1","key2":"value2"}&#10;2、头信息为空则写为：{}&#10;3、必填头信息：Accept、Content-Type、Cookie' spellcheck="false"></textarea>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" style="font-size: 12px">请求方式</span>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-warning" id="GET" style="font-size: 12px">
+                                            <input type="radio" name="mode" id="GET1" value="GET">GET
+                                        </label>
+                                        <label class="btn btn-warning" id="POST" style="font-size: 12px">
+                                            <input type="radio" name="mode" id="POST1" value="POST">POST
+                                        </label>
+                                        <label class="btn btn-warning" id="UPLOAD_PIC" style="font-size: 12px">
+                                            <input type="radio" name="mode" id="UPLOAD_PIC1" value="UPLOAD_PIC">UPLOAD_PIC
+                                        </label>
+                                    </div>
+                                </div>
+                                <span style="font-size: 12px">* 如果选择"UPLOAD_PIC"，头信息中"Content-Type"的设值为空</span>
+                            </div>
+                            <br>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <textarea class="formated_dict" name="formated_dict" rows="7" style="width: 460px;font-size: 12px;display: none" spellcheck="false"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3" style="position: relative">
+                        <div style="width: 300px;background-color: #eaebee;border: 1px solid;border-radius:2px;text-align: center;">接口请求参数</div>
+                        <textarea id="original_body" rows="25" style="width: 300px;font-size: 12px" placeholder='请输入原始参数。说明：&#10;1、支持多种参数格式；&#10;2、参数只支持：字母、数字、下划线、中文。如果一个参数有多个值，则每个值之间以,分隔。' required="" spellcheck="false"></textarea>
+                    </div>
+                    <div class="col-md-1" style="position: relative;margin-left: -50px;margin-top: 220px">
+                        <button type="button" class="btn btn-primary" onclick="format_body_edit(this)">格式化参数<br>→</button>
+                    </div>
+                    <div class="col-md-3" style="position: relative;margin-left: -10px">
+                        <div style="width: 300px;background-color: #eaebee;border: 1px solid;border-radius:2px;text-align: center">接口请求参数</div>
+                        <textarea class="formated_str" rows="25" style="width: 300px;font-size: 12px" disabled="disabled" placeholder='请点击"格式化参数"，等待输出结果' required="" spellcheck="false"></textarea>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <caption>关键字列表</caption>
+                                <thead style="display: table;width: 100%;table-layout: fixed;">     <!--table加滚动条，改这里-->
+                                <tr>
+                                    <th style="width: 30px;text-align: center;font-size: 12px">#</th>
+                                    <th style="width: 50px;text-align: center;font-size: 12px">关键字</th>
+                                    <th style="width: 50px;text-align: center;font-size: 12px">所属模块</th>
+                                    <th style="text-align: center;font-size: 12px">类型</th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="tbody_edit" style="overflow-y: scroll;height: 323px;display: block;">    <!--table加滚动条，改这里-->
+                                    <tr style="display: table;width: 100%;table-layout: fixed;">    <!--table加滚动条，改这里-->
+                                        <td style="width: 30px;white-space: normal;text-align: center;font-size: 12px">{{ forloop.counter }}</td>
+                                        <td style="width: 50px;word-break:break-all;text-align: center;font-size: 12px"></td>
+                                        <td style="width: 50px;word-break:break-all;text-align: center;font-size: 12px"></td>
+                                        <td style="white-space: normal;overflow: hidden;text-align: center;font-size: 12px"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <span style="font-size: 10px;margin-top: -30px">* 关键字用于头信息、接口请求参数、断言匹配关键字</span><br>
+                        <span style="font-size: 10px;color: #FFA500">* 关键字引用格式：<span style="color: blue">{</span><span style="color: darkgoldenrod">关键字</span><span style="color: blue">}</span></span>
+                    </div>
+                </div>
+
+                <br>
+                <div class="row" style="margin-left: -20px" id="no1_div2">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">URL</span>
+                            <input id="edit_url" type="url" class="form-control" required="" oninvalid="setCustomValidity('请填写正确的URL');" oninput="setCustomValidity('');" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="yes1_div1" style="display: none">
+                    <div class="col-md-7">
+                        <div class="table-responsive" style="margin-left: 10px">
+                            <table class="table table-bordered">
+                                <caption>接口返回参数列表（非必填）</caption>
+                                <thead>
+                                <tr>
+                                    <th style="text-align: center;font-size: 12px">#</th>
+                                    <th style="display: none">id</th>
+                                    <th style="text-align: center;font-size: 12px">参数名称</th>
+                                    <th style="text-align: center;font-size: 12px">关键字</th>
+                                    <th style="text-align: center;font-size: 12px">左边界</th>
+                                    <th style="text-align: center;font-size: 12px">右边界</th>
+                                    <th style="text-align: center;font-size: 12px">索引</th>
+                                    <th style="text-align: center;font-size: 12px">添加行</th>
+                                    <th style="text-align: center;font-size: 12px">删除行</th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="tbody_resp_edit">
+                                <tr>
+                                    <td style="width: 30px;white-space: normal;text-align: center;">1</td>
+                                    <td style="display: none"></td>
+                                    <td style="width: 150px;text-align: center;">
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" name="resp_add_name" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td style="width: 120px;text-align: center;">
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" name="resp_add_keywords" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td style="width: 150px;text-align: center;">
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" name="resp_add_left" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td style="width: 150px;text-align: center;">
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" name="resp_add_right" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td style="width: 80px;text-align: center;">
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" name="resp_add_index" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td style="width: 80px;text-align: center;">
+                                        <div class="btn-group btn-xs">
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="add_resp_edit_row(this)">+</button>
+                                        </div>
+                                    </td>
+                                    <td style="width: 80px;text-align: center;">
+                                        <div class="btn-group btn-xs">
+                                            <button type="button" class="btn btn-danger btn-sm" disabled="disabled">-</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick={{ Method }}>保存</button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function show_no1(ele) {
+        $('#no1_div1').show();
+        $('#no1_div2').show();
+        $('#yes1_div1').hide();
+    }
+
+    function show_yes1(ele) {
+        $('#no1_div1').hide();
+        $('#no1_div2').hide();
+        $('#yes1_div1').show();
+    }
+</script>

@@ -1,0 +1,51 @@
+﻿{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>数据库性能参数</title>
+    <style>
+        th {
+            font-weight: strong;
+            color: #000000;
+            background-color: #FFFF00;
+            text-align: center;
+            white-space: nowrap;
+        }
+        td{
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<div>
+    <table border="6" cellspacing="3">
+        <caption style="color: blue"><b>目标数据库(192.168.0.97)性能</b></caption>
+        <thead>
+            <tr>
+                <th>数据库性能</th>
+                <th>当前值</th>
+            </tr>
+        </thead>
+
+        <tbody id="tbody">
+            <tr>
+                <td style="white-space: nowrap;">每秒Query量 QPS</td>
+                <td style="white-space: nowrap;">{{ sql_info.0}}</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">每秒事务量 TPS</td>
+                <td style="white-space: nowrap;">{{ sql_info.1}}</td>
+            </tr>
+            <tr>
+                <td style="white-space: nowrap;">当前连接数</td>
+                <td style="white-space: nowrap;">{{ sql_info.2}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

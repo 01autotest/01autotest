@@ -1,0 +1,211 @@
+﻿{% extends "base_interface.html" %}
+
+{% block title %}
+    接口测试 - 二代车场
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+
+        <div class="col-md-7">
+            <div class="panel panel-primary">
+                <div class="panel-body">
+
+                    <h1 style="font-size: 24px;color:green;">接口测试 - 二代车场</h1><br>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target=""
+                                style="margin-left: 20px" onclick="show_add_window('edcc')">添加接口
+                        </button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target=""
+                                style="margin-left: 70px" onclick="show_public_para()">设置公共参数
+                        </button>
+                    </div>
+
+                    <br><br>
+                    <div class="table-responsive">
+                        <table id="blocks" class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;display: none"><input type="checkbox" id="checkrev"></th>
+                                <th style="text-align: center">顺序</th>
+                                <th style="text-align: center;display: none">ID</th>
+                                <th style="text-align: center">接口名称</th>
+                                <th style="text-align: center;">URL</th>
+                                <th style="text-align: center">负责人</th>
+                                <th style="text-align: center">操作</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="tbody">
+                            {% for rec in interfaces %}
+                                <tr>
+                                    <td style="width: 30px;text-align: center;display: none"><input type="checkbox" name="check1" value="{{ forloop.counter }}"></td>
+                                    <td style="width: 70px;white-space: normal;text-align: center;">{{ rec.order }}</td>
+                                    <td style="width: 50px;text-align: center;display: none" id="ids">{{ rec.id }}</td>
+                                    <td style="max-width: 150px;font-size: 12px;white-space: nowrap;overflow: hidden;">{{ rec.name }}</td>
+                                    <td style="max-width: 130px;white-space: nowrap;overflow: hidden;font-size: 12px">{{ rec.url }}</td>
+                                    <td style="width:100px;text-align: center;font-size: 12px">{{ rec.charger }}</td>
+                                    <!-- 操作 -->
+                                    <td id="operations" style="width: 280px;text-align: center;">
+                                        <div class="btn-group btn-group-xs" style="margin-left: -15px;">
+                                            <button type="button" class="btn btn-primary"
+                                                    onclick="start_interface_test(this)">执行
+                                            </button>
+                                            <button type="button" class="btn btn-info" data-toggle="modal"
+                                                    data-target="" data-whatever="{{ rec.name }}"
+                                                    onclick="show_edit_interface(this,'{{ rec.id }}','edcc')">编辑
+                                            </button>
+                                            <button type="button" class="btn btn-warning" data-toggle="modal"
+                                                    data-target="" data-whatever="{{ rec.name }}"
+                                                    onclick="show_assert(this,'{{ rec.id }}')">断言
+                                            </button>
+                                            <button type="button" class="btn btn-danger" data-toggle="modal"
+                                                    data-target="#del_window"
+                                                    data-whatever="{{ rec.id }}_{{ rec.name }}">删除
+                                            </button>
+                                            <button type="button" class="btn btn-primary" style="margin-left: 5px"
+                                                    onclick="start_interface_test_AI(this)">异常测试
+                                            </button>
+                                            <a type="button" class="btn btn-warning" target="_blank" href="/show_assert_AI/{{ rec.id }}/">异常断言</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="pagiDiv" align="right" style="text-align:center">
+                        <span id="spanFirst">首页</span>&nbsp;&nbsp;
+                        <span id="spanPre">上一页</span>&nbsp;&nbsp;
+                        <span id="spanNext">下一页</span>&nbsp;&nbsp;
+                        <span id="spanLast">末页</span>&nbsp;&nbsp;
+                        第&nbsp;<span id="spanPageNum"></span>&nbsp;/&nbsp;<span id="spanTotalPage"></span>&nbsp;页
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 日志窗口 -->
+        <div class="col-md-5">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">日志输出</h3>
+                </div>
+                <div class="panel-body" style="background:#000;">
+                    <textarea id="textarea" class="textarea" style="background:#000; color:yellow;word-break: break-all"></textarea>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 公共参数 -->
+    <div class="modal fade" id="public_para" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document" style="width: 1200px;">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">设置公共参数</h4>
+                </div>
+
+                <div class="modal-body">
+                    <iframe id="frame_public_window" class="frame_public_window" name='frame_public_window' src="" width="100%" height="685" allowTransparency="true" scrolling="no" style="background-color:transparent;border: 0;"></iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加接口 -->
+    <div class="modal fade" id="add_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document" style="width: 1500px;margin-left: 70px">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">添加接口</h4>
+                </div>
+
+                <div class="modal-body">
+                    <iframe id="frame_add_window" class="frame_add_window" name='frame_add_window' src="" width="100%" height="640px" allowTransparency="true" style="background-color:transparent;border: 0;"></iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑接口 -->
+    <div class="modal fade" id="edit_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document" style="width: 1500px;margin-left: 70px">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">编辑接口</h4>
+                </div>
+
+                <div class="modal-body">
+                    <iframe id="frame_edit_window" class="frame_edit_window" name='frame_edit_window' src="" width="100%" height="640px" allowTransparency="true" style="background-color:transparent;border: 0;"></iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 断言 -->
+    <div class="modal fade" id="assert_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document" style="width: 1500px;margin-left: 70px">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">断言</h4>
+                </div>
+
+                <div class="modal-body">
+                    <iframe id="frame_assert_window" class="frame_assert_window" name='frame_assert_window' src="" width="100%" height="570px" allowTransparency="true" style="background-color:transparent;border: 0;"></iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除接口 -->
+    <div class="modal fade" id="del_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h1 class="modal-title" style="font-size: 20px;color:green;"></h1>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" href="javascript:void(0)"
+                            onclick="del_interfaces(this)">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公共api -->
+    <div class="modal fade" id="public_api_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document" style="width: 1400px;">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">公共api</h4>
+                </div>
+
+                <div class="modal-body">
+                    <iframe id="current2" class="current2" name='current2' src="" width="100%" height="700"
+                            allowTransparency="true" style="background-color:transparent;border: 0;"></iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

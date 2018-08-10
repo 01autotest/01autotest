@@ -1,0 +1,402 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>接口测试 - 公共参数</title>
+    <script type="text/javascript" charset="gbk" src="{% static "js/jquery-1.4.4.min.js" %}"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+{#    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">#}
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/static/css/fileinput.min.css">
+{#    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">#}
+    <script type="text/javascript" charset="gbk" src="{% static "js/fileinput.min.js" %}"></script>
+
+    <script type="text/javascript">
+        //全局变量
+        var numCount;       //数据总数量
+        var columnsCounts;  //数据列数量
+        var pageCount;      //每页显示的数量
+        var pageNum;        //总页数
+        var currPageNum;   //当前页数
+
+        //页面标签变量
+        var blockTable;
+        var preSpan;
+        var firstSpan;
+        var nextSpan;
+        var lastSpan;
+        var pageNumSpan;
+        var currPageSpan;
+
+
+        window.onload = function () {
+            //页面标签变量
+            blockTable = document.getElementById("blocks");
+            preSpan = document.getElementById("spanPre");
+            firstSpan = document.getElementById("spanFirst");
+            nextSpan = document.getElementById("spanNext");
+            lastSpan = document.getElementById("spanLast");
+            pageNumSpan = document.getElementById("spanTotalPage");
+            currPageSpan = document.getElementById("spanPageNum");
+
+            numCount = document.getElementById("blocks").rows.length - 1;       //取table的行数作为数据总数量（减去标题行1）
+            columnsCounts = blockTable.rows[0].cells.length;
+            pageCount = 6;
+            pageNum = parseInt(numCount / pageCount);
+            if (0 != numCount % pageCount) {
+                pageNum += 1;
+            }
+
+            firstPage();
+        };
+    </script>
+</head>
+
+<body>
+<div class="panel panel-info">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">参数名称</span>
+                        <input id="name" type="text" class="form-control" required="">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">关键字</span>
+                        <input id="keywords" type="text" class="form-control" placeholder="建议以字母、下划线组成，长度在20个字符以内" required="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">参数值</span>
+                        <input id="value" type="text" class="form-control" required=""><span class="input-group-btn"><button type="button" class="btn btn-primary" onclick="add_public_para()">添加</button></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-primary">
+    <div class="panel-body">
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-primary" onclick="save_public_para()">保存修改</button>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="table-responsive">
+            <table id="blocks" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th style="text-align: center;display: none"><input type="checkbox"></th>
+                    <th style="text-align: center">#</th>
+                    <th style="text-align: center;display: none">id</th>
+                    <th style="text-align: center">参数名称</th>
+                    <th style="text-align: center">参数值</th>
+                    <th style="text-align: center">关键字</th>
+                    <th style="text-align: center">操作</th>
+                </tr>
+                </thead>
+
+                <tbody id="tbody_interface1">
+                {% for rec in para_list %}
+                    <tr>
+                        <td style="white-space: nowrap;text-align: center;display: none"><input type="checkbox" checked="checked" name="chk"></td>   <!--全部更新的情况一定要有这个if判断，否则k不只有数字，还有其他值-->
+                        <td style="width: 30px;white-space: normal;text-align: center;">{{ forloop.counter }}</td>
+                        <td style="white-space: normal;text-align: center;overflow: hidden;display: none">{{ rec.id }}</td>
+                        {% if rec.keywords == "wypt" or rec.keywords == "yypt" or rec.keywords == "xqmc"%}
+                            {% if cur_user == "admin" %}
+                                <td style="width: 250px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.name }}"></td>
+                                <td style="white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.value }}"></td>
+                                <td style="width: 130px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.keywords }}"></td>
+                                <td style="width: 70px;white-space: nowrap;overflow: hidden;text-align: center;"><div class="btn-group btn-xs"><button type="button" class="btn btn-danger btn-sm" onclick="del_public_para('{{ rec.id }}')">删除</button></div></td>
+                            {% else %}
+                                <td style="width: 250px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.name }}" readonly></td>
+                                <td style="white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.value }}"></td>
+                                <td style="width: 130px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.keywords }}" readonly></td>
+                                <td style="width: 70px;white-space: nowrap;overflow: hidden;text-align: center;"><div class="btn-group btn-xs"><button type="button" class="btn btn-danger btn-sm" disabled>删除</button></div></td>
+                            {% endif %}
+                        {% elif "AI" in rec.keywords%}
+                            {% if cur_user == "admin" %}
+                                <td style="width: 250px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.name }}"></td>
+                                <td style="white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.value }}"></td>
+                                <td style="width: 130px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.keywords }}"></td>
+                                <td style="width: 70px;white-space: nowrap;overflow: hidden;text-align: center;"><div class="btn-group btn-xs"><button type="button" class="btn btn-danger btn-sm" onclick="del_public_para('{{ rec.id }}')">删除</button></div></td>
+                            {% else %}
+                                <td style="width: 250px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.name }}" readonly></td>
+                                <td style="white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.value }}" readonly></td>
+                                <td style="width: 130px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.keywords }}" readonly></td>
+                                <td style="width: 70px;white-space: nowrap;overflow: hidden;text-align: center;"><div class="btn-group btn-xs"><button type="button" class="btn btn-danger btn-sm" disabled>删除</button></div></td>
+                            {% endif %}
+                        {% else %}
+                            <td style="width: 250px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.name }}"></td>
+                            <td style="white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.value }}"></td>
+                            <td style="width: 130px;white-space: normal;overflow: hidden;"><input type="text" class="form-control" value="{{ rec.keywords }}"></td>
+                            <td style="width: 70px;white-space: nowrap;overflow: hidden;text-align: center;"><div class="btn-group btn-xs"><button type="button" class="btn btn-danger btn-sm" onclick="del_public_para('{{ rec.id }}')">删除</button></div></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="pagiDiv" align="right" style="text-align:center">
+            <span id="spanFirst">首页</span>&nbsp;&nbsp;
+            <span id="spanPre">上一页</span>&nbsp;&nbsp;
+            <span id="spanNext">下一页</span>&nbsp;&nbsp;
+            <span id="spanLast">末页</span>&nbsp;&nbsp;
+            第&nbsp;<span id="spanPageNum"></span>&nbsp;/&nbsp;<span id="spanTotalPage"></span>&nbsp;页
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function add_public_para(ele) {
+        var name = $('#name').val();
+        var keywords = $('#keywords').val();
+        var value = $('#value').val();
+
+        $.ajax({
+            url: "/add_public_para/",
+            data: JSON.stringify({ // JSON格式封装数据
+                name1: name,
+                keywords1:keywords,
+                value1:value,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }),
+            headers:{'X-CSRFToken': '{{ csrf_token }}'}, //csrf
+            contentType: 'application/json;charset=utf-8',
+            type: "POST",
+            traditional: true, // 需要传递列表、字典时加上这句
+            success: function (result) {
+                window.location.reload(true);
+                console.log(result);
+            },
+            fail: function (result) {
+                debugger
+            }
+        });
+    }
+
+    function del_public_para(ele) {
+        console.log(ele);
+
+        $.ajax({
+            url: "/del_public_para/",
+            data: JSON.stringify({ // JSON格式封装数据
+                id1: ele,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }),
+            headers:{'X-CSRFToken': '{{ csrf_token }}'}, //csrf
+            contentType: 'application/json;charset=utf-8',
+            type: "POST",
+            traditional: true, // 需要传递列表、字典时加上这句
+            success: function (result) {
+                window.location.reload(true);
+                console.log(result);
+            },
+            fail: function (result) {
+                debugger
+            }
+        });
+    }
+
+    function save_public_para(ele){
+        var public_paras = document.getElementsByName("chk");
+        console.log(public_paras);
+        var public_para_list = [];
+        for (k in public_paras) {
+            if (public_paras[k].checked) {      //全部更新的情况一定要有这个if判断，否则k不只有数字，还有其他值
+                var id = $(public_paras[k]).parent().parent().find('td')[2].textContent;  //通过元素获取当前行，再获取当前行的元素
+                var name = $(public_paras[k]).parent().parent().find('input')[1].value;
+                var value = $(public_paras[k]).parent().parent().find('input')[2].value;
+                var keywords = $(public_paras[k]).parent().parent().find('input')[3].value;
+                console.log([id, name, value, keywords]);
+                public_para_list.push([id, name, value, keywords]);
+            }
+        }
+        console.log(public_para_list);
+
+        $.ajax({
+            url: "/save_public_para/",
+            data: JSON.stringify({ // JSON格式封装数据
+                public_para_list: public_para_list,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }),
+            headers:{'X-CSRFToken': '{{ csrf_token }}'}, //csrf
+            contentType: 'application/json;charset=utf-8',
+            type: "POST",
+            traditional: true, // 需要传递列表、字典时加上这句
+            success: function(result) {
+                window.location.reload(true);
+                console.log(result);
+            },
+            fail: function(result) {
+                debugger
+            }
+        });
+    }
+
+    function firstPage() {
+        hide();
+        currPageNum = 1;
+        showCurrPage(currPageNum);
+        showTotalPage();
+        for (i = 1; i < pageCount + 1; i++) {
+            blockTable.rows[i].style.display = "";
+        }
+
+        firstText();
+        preText();
+        nextLink();
+        lastLink();
+    }
+
+    function prePage() {
+        hide();
+        currPageNum--;
+        showCurrPage(currPageNum);
+        showTotalPage();
+        var firstR = firstRow(currPageNum);
+        var lastR = lastRow(firstR);
+        for (i = firstR; i < lastR; i++) {
+            blockTable.rows[i].style.display = "";
+        }
+
+        if (1 == currPageNum) {
+            firstText();
+            preText();
+            nextLink();
+            lastLink();
+        } else if (pageNum == currPageNum) {
+            preLink();
+            firstLink();
+            nextText();
+            lastText();
+        } else {
+            firstLink();
+            preLink();
+            nextLink();
+            lastLink();
+        }
+
+    }
+
+    function nextPage() {
+        hide();
+        currPageNum++;
+        showCurrPage(currPageNum);
+        showTotalPage();
+        var firstR = firstRow(currPageNum);
+        var lastR = lastRow(firstR);
+        for (i = firstR; i < lastR; i++) {
+            blockTable.rows[i].style.display = "";
+        }
+
+        if (1 == currPageNum) {
+            firstText();
+            preText();
+            nextLink();
+            lastLink();
+        } else if (pageNum == currPageNum) {
+            preLink();
+            firstLink();
+            nextText();
+            lastText();
+        } else {
+            firstLink();
+            preLink();
+            nextLink();
+            lastLink();
+        }
+    }
+
+    function lastPage() {
+        hide();
+        currPageNum = pageNum;
+        showCurrPage(currPageNum);
+        showTotalPage();
+        var firstR = firstRow(currPageNum);
+        for (i = firstR; i < numCount + 1; i++) {
+            blockTable.rows[i].style.display = "";
+        }
+
+        firstLink();
+        preLink();
+        nextText();
+        lastText();
+    }
+
+    // 计算将要显示的页面的首行和尾行
+    function firstRow(currPageNum) {
+        return pageCount * (currPageNum - 1) + 1;
+    }
+
+    function lastRow(firstRow) {
+        var lastRow = firstRow + pageCount;
+        if (lastRow > numCount + 1) {
+            lastRow = numCount + 1;
+        }
+        return lastRow;
+    }
+
+    function showCurrPage(cpn) {
+        currPageSpan.innerHTML = cpn;
+    }
+
+    function showTotalPage() {
+        pageNumSpan.innerHTML = pageNum;
+    }
+
+    //隐藏所有行
+    function hide() {
+        for (var i = 1; i < numCount + 1; i++) {
+            blockTable.rows[i].style.display = "none";
+        }
+    }
+
+    //控制首页等功能的显示与不显示
+    function firstLink() {
+        firstSpan.innerHTML = "<a href='javascript:firstPage();'>首页</a>";
+    }
+    function firstText() {
+        firstSpan.innerHTML = "首页";
+    }
+
+    function preLink() {
+        preSpan.innerHTML = "<a href='javascript:prePage();'>上一页</a>";
+    }
+    function preText() {
+        preSpan.innerHTML = "上一页";
+    }
+
+    function nextLink() {
+        nextSpan.innerHTML = "<a href='javascript:nextPage();'>下一页</a>";
+    }
+    function nextText() {
+        nextSpan.innerHTML = "下一页";
+    }
+
+    function lastLink() {
+        lastSpan.innerHTML = "<a href='javascript:lastPage();'>末页</a>";
+    }
+    function lastText() {
+        lastSpan.innerHTML = "末页";
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{% load staticfiles %}
+<div class="modal fade" id="edit_para_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" onload="opener.location.reload()">
+    <div class="modal-dialog" role="document" style="width: 1500px;margin-left: 70px">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">编辑接口</h4>
+                <h4 class="modal-title1" id="exampleModalLabel" style="display: none"></h4>
+                <h4 class="modal-title2" id="exampleModalLabel" style="display: none"></h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon">头信息</span>
+                                    <textarea id="head" name="head" rows="6" style="width: 395px;font-size: 14px" placeholder='说明：&#10;1、格式：{"key1":"value1","key2":"value2"}&#10;2、头信息为空则写为：{}&#10;3、必填头信息：Accept、Content-Type、Cookie' spellcheck="false"></textarea>
+                                </div>
+                                <span style="font-size: 12px">* Cookie关键字：'yypt' - 运营平台、'wypt' - 物业平台、'dspt' - 电商平台、'sjpt' - 商家平台、'ggpt' - 广告平台</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon">请求方式</span>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-warning" id="GET">
+                                            <input type="radio" name="mode" id="GET1" value="GET">GET
+                                        </label>
+                                        <label class="btn btn-warning" id="POST" style="margin-left: 5px;">
+                                            <input type="radio" name="mode" id="POST1" value="POST">POST
+                                        </label>
+                                        <label class="btn btn-warning" id="UPLOAD_PIC" style="margin-left: 5px;">
+                                            <input type="radio" name="mode" id="UPLOAD_PIC1" value="UPLOAD_PIC">UPLOAD_PIC
+                                        </label>
+                                    </div>
+                                </div>
+                                <span style="font-size: 12px">* 如果选择"UPLOAD_PIC"，头信息中"Content-Type"的设值为空</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" style="font-size: 12px">更新cookie</span>
+                                    <input name="suit_cookie" type="text" class="form-control" style="font-size: 12px">
+                                </div>
+                                <span style="font-size: 12px">* 非必填，只有登录接口才需要填写</span><br>
+                                <span style="font-size: 12px">* 填写公共参数中关联cookie的关键字，例如要更新物业平台cookie，请填写：{wypt}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <textarea class="formated_dict" id="para_body" name="formated_dict" rows="7" style="width: 460px;font-size: 12px;display: none" spellcheck="false"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3" style="position: relative">
+                        <div style="width: 350px;background-color: #eaebee;border: 1px solid;border-radius:2px;text-align: center;">接口请求参数</div>
+                        <textarea class="original_body" rows="30" style="width: 350px;font-size: 12px" placeholder='请输入原始参数。说明：&#10;1、支持多种参数格式；&#10;2、参数只支持：字母、数字、下划线、中文。如果一个参数有多个值，则每个值之间以,分隔。' required="" spellcheck="false"></textarea>
+                        <span style="font-size: 12px">* 请求参数关键字：'yhsq' - 一号社区xid、'wyj' - 物业+token、'xqid' - 小区id、'select xxx' - sq语句，用于设置变化的值</span>
+                    </div>
+                    <div class="col-md-1" style="position: relative;margin-left: -10px;margin-top: 220px">
+                        <button type="button" class="btn btn-primary" onclick="format_body_edit(this)">格式化参数<br>→</button>
+                    </div>
+                    <div class="col-md-3" style="position: relative;margin-left: -10px">
+                        <div style="width: 500px;background-color: #eaebee;border: 1px solid;border-radius:2px;text-align: center">接口请求参数</div>
+                        <textarea class="formated_str" rows="30" style="width: 500px;font-size: 12px" disabled="disabled" placeholder='请点击"格式化参数"，等待输出结果' required="" spellcheck="false"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="save_edit_para_suit()">保存</button>
+            </div>
+            
+        </div>
+    </div>
+</div>

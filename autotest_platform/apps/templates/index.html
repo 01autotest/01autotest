@@ -1,0 +1,301 @@
+﻿{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>自动化测试平台</title>
+
+    <link href="/static/style_back_3/css/style.default.css" rel="stylesheet">
+    <link href="/static/style_back_3/css/morris.css" rel="stylesheet">
+    <link href="/static/style_back_3/css/select2.css" rel="stylesheet"/>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+        <![endif]-->
+    <script type="text/javascript">
+        window.onload = function () {
+            de_duplication();
+        };
+    </script>
+</head>
+
+<body>
+<header>
+    <div class="headerwrapper">
+        <div class="header-left">
+            <a href="/index" class="logo">
+                <img src="/static/images/invoice-logo.jpg" style="margin-left: 20px;width: 112px;height: 25px" alt=""/>
+            </a>
+            <div class="pull-right">
+                <a href="" class="menu-collapse">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div><!-- header-left -->
+
+        <div class="header-right">
+
+            <div class="pull-right">
+
+{#                <div class="btn-group btn-group-list btn-group-notification">#}
+{#                    <button type="button" class="btn btn-default dropdown-toggle">#}
+{#                        {% current_available_languages as current_languages %}#}
+{#                        {% get_available_languages as LANGUAGES %}#}
+{#                        <div class="nav_language_div2">#}
+{#                            {% get_language_info_list for current_languages as languages %}#}
+{#                            {% for language in languages %}#}
+{#                                {% if not forloop.first %}#}
+{#                                    <span>/</span>#}
+{#                                {% endif %}#}
+{#                                {% ifequal LANGUAGE_CODE language.code %}#}
+{#                                    <a href="{% translate_url language.code %}" style="color: white"#}
+{#                                       class='nav_color_active'>#}
+{#                                        {{ language.name_local }}#}
+{#                                    </a>#}
+{#                                {% else %}#}
+{#                                    <a href="{% translate_url language.code %}" style="color: white">#}
+{#                                        {{ language.name_local }}#}
+{#                                    </a>#}
+{#                                {% endifequal %}#}
+{#                            {% endfor %}#}
+{#                        </div>#}
+{#                    </button>#}
+{#                </div>#}
+
+{#                <div class="btn-group btn-group-list btn-group-notification">#}
+{#                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="color: black;background-color: aqua">#}
+{#                        选择语言#}
+{#                    </button>#}
+{#                    <div class="dropdown-menu pull-right">#}
+{#                        <h5>语言列表</h5>#}
+{#                        <ul class="media-list dropdown-list">#}
+{#                            <li class="media">#}
+{#                                <a href="/i18n/setlang//zh_hans/">简体中文</a>#}
+{#                                <a href="/i18n/setlang//zh_hant/">繁体中文</a>#}
+{#                                <a href="/i18n/setlang//en/">英语</a>#}
+{#                            </li>#}
+{#                        </ul>#}
+{#                    </div><!-- dropdown-menu -->#}
+{#                </div><!-- btn-group -->#}
+
+{#                <div class="btn-group btn-group-list btn-group-notification">#}
+{#                    <form class="btn btn-default dropdown-toggle" action="{% url 'set_language' %}" method="post" style="color: black">#}
+{#                        {% csrf_token %}#}
+{#                        <input name="next" type="hidden" value="{{ redirect_to }}"/>#}
+{#                        <select name="language">#}
+{#                            {% for language in LANGUAGES %}#}
+{#                                <option value="{{ language.0 }}"{% if language.0 == LANGUAGE_CODE %} selected="selected"{% endif %}>#}
+{#                                {{ language.1 }} ({{ language.0 }})#}
+{#                            {% endfor %}#}
+{#                        </select>#}
+{#                        <input type="submit" value="Go"/>#}
+{#                    </form>#}
+{#                </div><!-- btn-group -->#}
+
+{#                <div class="btn-group btn-group-list btn-group-notification">#}
+{#                    <form class="btn btn-default dropdown-toggle" action="/i18n/setlang/" method="post" style="color: black">#}
+{#                        {% csrf_token %}#}
+{#                        <input name="next" type="hidden" value="{{ redirect_to }}"/>#}
+{#                        <select name="language">#}
+{#                            {% for lang in LANGUAGES %}#}
+{#                                <option value="{{ lang.0 }}">{{ lang.1 }}</option>#}
+{#                            {% endfor %}#}
+{#                        </select>#}
+{#                        <input type="submit" value="Go"/>#}
+{#                    </form>#}
+{#                </div><!-- btn-group -->#}
+
+                <div class="btn-group btn-group-list btn-group-notification">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+{#                        <i class="fa fa-bell-o"></i>#}
+                        <span style="color: papayawhip">平台更新历史</span>
+                    </button>
+                    <div class="dropdown-menu pull-right">
+                        <h5>平台更新历史</h5>
+                        <ul class="media-list dropdown-list">
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 平台框架确定</strong>
+                                    <small class="date">2017-04-26</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> UI自动化测试完成</strong>
+                                    <small class="date">2017-06-30</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 接口测试完成</strong>
+                                    <small class="date">2017-10-10</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 增加app专项测试</strong>
+                                    <small class="date">2017-11-10</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 接口测试全面优化</strong>
+                                    <small class="date">2017-12-06</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 样式全面优化调整，支持响应式布局</strong>
+                                    <small class="date">2017-12-25</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 平台从python2迁移到python3</strong>
+                                    <small class="date">2018-2-8</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 平台安全加固：XSS防御、CSRF防御、SQL注入防御</strong>
+                                    <small class="date">2018-2-24</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 接口测试优化：接口去掉线程调用，测试套执行速度明显提升</strong>
+                                    <small class="date">2018-5-8</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> app测试优化：增加暂停、重绘按钮；页面加载耗时功能优化，命中准确度明显提升</strong>
+                                    <small class="date">2018-5-9</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 平台安全加固：能抵抗一切CC攻击</strong>
+                                    <small class="date">2018-5-16</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 接口测试全面升级：公共参数可新增修改删除；增加接口返回值，可供其他接口调用；重构部分老功能</strong>
+                                    <small class="date">2018-5-25</small>
+                                </div>
+                            </li>
+                            <li class="media">
+                                <div class="media-body">
+                                    <strong> 增加web版操作手册功能，可播放视频、图片、地图等</strong>
+                                    <small class="date">2018-5-29</small>
+                                </div>
+                            </li>
+                        </ul>
+                    </div><!-- dropdown-menu -->
+                </div><!-- btn-group -->
+
+                <div class="btn-group btn-group-option">
+                    <button type="button" class="btn btn-default dropdown-toggle">
+                        <a href="/logout" style="color: white">注销</a>
+                    </button>
+                </div><!-- btn-group -->
+
+            </div><!-- pull-right -->
+
+        </div><!-- header-right -->
+
+    </div><!-- headerwrapper -->
+</header>
+
+<section>
+    <div class="mainwrapper">
+        <div class="leftpanel">
+            <div class="media profile-left">
+                <a class="pull-left profile-thumb" href="/index">
+                    <img class="img-circle" src="/static/images/zapface.png" style="width: 60px;height: 60px" alt="">
+                </a>
+                <div class="media-body">
+                    <h4 class="media-heading">{{ cur_user }}</h4>
+                    <small class="text-muted">欢迎您，{{ cur_user }}</small>
+                </div>
+            </div><!-- media -->
+
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active"><a href="/index"><i class="fa fa-home"></i> <span>首页</span></a></li>
+                <li class="parent" ><a href=""><i class="fa fa-rss"></i> <span>接口测试</span></a>
+                    <ul class="children" style="display: block">
+                        <li><a target="current" href="/interface_page/public/">公共接口</a></li>
+                        <li><a target="current" href="/interface_page/wyyy/">物业运营</a></li>
+                        <li><a target="current" href="/interface_page/dssj/">电商商家</a></li>
+                        <li><a target="current" href="/interface_page/djmj/">对讲门禁</a></li>
+                        <li><a target="current" href="/interface_page/edcc/">二代车场</a></li>
+                        <li><a target="current" href="/interface_page/snxm/">苏宁车生活</a></li>
+                        <li><a target="current" href="/interface_page/zhxy/">智慧校园</a></li>
+                        <li><a target="current" href="/interface_page/suit/">测试套</a></li>
+                        <!--li><a target="current" href="/apitestreport/">测试报告</a></li-->
+                    </ul>
+                </li>
+                <li class="parent" ><a href=""><i class="fa fa-rss"></i> <span>定时任务</span></a>
+                    <ul class="children" style="display: block">
+                        <li><a target="current" href="/periodic_task/">周期任务</a></li>
+                    </ul>
+                </li>
+                 <li class="parent" ><a href=""><i class="fa fa-rss"></i> <span>测试报告</span></a>
+                    <ul class="children" style="display: block">
+                        <li><a target="current" href="/apitestreport/">测试报告</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+        </div><!-- leftpanel -->
+
+        <div class="mainpanel">
+{#                        <iframe id="current" class="current" name='current' src="" frameborder="0" scrolling="no" width="100%" height="1000" allowTransparency="true" onload="setIframeHeight(this)"></iframe>#}
+            <iframe id="current" class="current" name='current' src="" width="100%" height="840px" allowTransparency="true" style="background-color:transparent;border: 0;"></iframe>
+
+        </div>
+    </div><!-- mainwrapper -->
+</section>
+
+<script src="/static/style_back_3/js/jquery-1.11.1.min.js"></script>
+<script src="/static/style_back_3/js/jquery-migrate-1.2.1.min.js"></script>
+<script src="/static/style_back_3/js/bootstrap.min.js"></script>
+<script src="/static/style_back_3/js/modernizr.min.js"></script>
+<script src="/static/style_back_3/js/pace.min.js"></script>
+<script src="/static/style_back_3/js/retina.min.js"></script>
+<script src="/static/style_back_3/js/jquery.cookies.js"></script>
+
+<script src="/static/style_back_3/js/jquery.flot.min.js"></script>
+<script src="/static/style_back_3/js/jquery.flot.resize.min.js"></script>
+<script src="/static/style_back_3/js/jquery.flot.spline.min.js"></script>
+<script src="/static/style_back_3/js/jquery.sparkline.min.js"></script>
+<script src="/static/style_back_3/js/morris.min.js"></script>
+<script src="/static/style_back_3/js/raphael-2.1.0.min.js"></script>
+<script src="/static/style_back_3/js/bootstrap-wizard.min.js"></script>
+<script src="/static/style_back_3/js/select2.min.js"></script>
+
+<script src="/static/style_back_3/js/custom.js"></script>
+<script src="/static/style_back_3/js/dashboard.js"></script>
+<script type="text/javascript">
+    function setIframeHeight(iframe) {
+        if (iframe) {
+            var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+            if (iframeWin.document.body) {
+                iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+            }
+        }
+    }
+    window.onload = function () {
+        setIframeHeight(document.getElementById('current'));
+    };
+</script>
+
+</body>
+</html>

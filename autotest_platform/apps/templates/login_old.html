@@ -1,0 +1,106 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>测试平台登录</title>
+    <style>
+        body{
+            background-image: url("/static/images/112.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .input{
+            width: 20%;
+            height: 18%;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: 华文行楷;
+        }
+        .submit{
+            margin-left: 30px;
+            width: 16%;
+            height: 20%;
+            font-size: 20px;
+            background:#44b549;
+            border-color:#44b549;
+            border-radius: 2px;
+            font-family: 华文行楷;
+        }
+        #form {
+            position: absolute;
+            top: 35%;
+            left: 42%;
+            width: 65%;
+            height: 20%;
+            padding: 20px;
+            z-index:1002;
+            overflow: auto;
+        }
+        #footer{
+            position: absolute;  bottom: 0; /* 关键 */
+            left:0; /* IE下一定要记得 */
+            width: 100%;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<font id="divT" style="float: right;background: lavender"></font>
+
+<br><h1 style="font-size: 35px;color: #00008b;text-align: center">零壹移动自动化测试管理平台</h1><br>
+
+
+{% if form.errors %}
+    <p class="error">Sorry, that's not a valid username or password</p>
+{% endif %}
+
+<form id="form" action="" method="post" style="align-content: center">
+    {% csrf_token %}
+    <input class="input" type="text" name="username" value="" id="username" placeholder="用户名"><br><br>
+    <input class="input" type="password" name="password" value="" id="password" placeholder="密码"><br><br>
+    <input class="submit" type="submit" value="登  录">
+    <input type="hidden" name="next" value="{{ next|escape }}">
+</form>
+
+<div id="footer" style="background-color:#FFA500;clear:both;text-align:center;">
+    <p>Copyright © 2014 - 2017 OEASY. All Use Rights Reserved</p>
+    <p>深圳市零壹移动互联系统有限公司 永久使用权</p>
+    <p>作者 赵家启</p>
+</div>
+
+<script language="javascript">
+function getCurDate(){
+    var d = new Date();
+    var week;
+    switch (d.getDay()){
+        case 1: week="星期一"; break;
+        case 2: week="星期二"; break;
+        case 3: week="星期三"; break;
+        case 4: week="星期四"; break;
+        case 5: week="星期五"; break;
+        case 6: week="星期六"; break;
+        default: week="星期天";
+    }
+    var years = d.getFullYear();
+    var month = add_zero(d.getMonth()+1);
+    var days = add_zero(d.getDate());
+    var hours = add_zero(d.getHours());
+    var minutes = add_zero(d.getMinutes());
+    var seconds=add_zero(d.getSeconds());
+    var ndate = years+"年"+month+"月"+days+"日 "+hours+":"+minutes+":"+seconds+" "+week;
+    var divT=document.getElementById("divT");
+    divT.innerHTML= ndate;
+}
+
+function add_zero(temp){
+    if(temp<10) return "0"+temp;
+    else return temp;
+}
+
+setInterval("getCurDate()",100);
+</script>
+</body>
+</html>
+

@@ -1,0 +1,109 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>零壹移动自动化测试管理平台</title>
+    <style>
+        #tabsContent{
+            font-size: 25px;
+        }
+        body{
+            background-image: url("/static/images/111.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        #footer{
+            position: absolute;  bottom: 0; /* 关键 */
+            left:0; /* IE下一定要记得 */
+            width: 100%;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body bgcolor="#FFFFFF" style="height: 100%">
+
+<font id="divT" style="float: right;background: lavender"></font>
+
+<br><h1 style="font-size: 35px;color: #00008b;text-align: center">零壹移动自动化测试管理平台</h1><br>
+<div id="tabsContent" style="text-align: center;">
+    {% for rec in permission_list1 %}
+        {% ifequal rec.CI "True" %}
+        <a target="_blank" style="position: relative;" href="http://192.168.2.219:1013/CI/">持续集成<span style="font-size: 20px;color: black">(敬请期待)</span></a>
+        {% endifequal %}
+
+        {% ifequal rec.automation "True" %}
+        <a target="_blank" style="position: relative; margin-left: 20px;" href="http://192.168.2.219:1013/automation/">功能测试</a>
+        {% endifequal %}
+
+        {% ifequal rec.security "True" %}
+        <a target="_blank" style="position: relative; margin-left: 20px;" href="http://192.168.2.219:1013/security/">安全测试</a>
+        {% endifequal %}
+
+        {% ifequal rec.interfaces "True" %}
+        <a target="_blank" style="position: relative; margin-left: 20px;" href="http://192.168.2.219:1013/interface/">接口测试</a>
+        {% endifequal %}
+
+        {% ifequal rec.performance "True" %}
+        <a target="_blank" style="position: relative; margin-left: 20px;" href="http://192.168.2.219:1013/performance/">性能监控</a>
+        {% endifequal %}
+
+        {% ifequal rec.shares "True" %}
+        <a target="_blank" style="position: relative; margin-left: 20px;" href="http://192.168.2.219:1013/shares/">技术分享</a>
+        {% endifequal %}
+
+        {% ifequal rec.premissions "True" %}
+        <a target="_blank" style="position: relative; margin-left: 20px;" href="http://192.168.2.219:1013/permissions/">权限配置</a>
+        {% endifequal %}
+
+        <a style="position: relative; margin-left: 20px;color: black;" href="http://192.168.2.219:1013/logout/">退出登录</a>
+    {% endfor %}
+</div>
+<br><br><br><br><br>
+
+<div style="text-align: center;">
+    <iframe src="highcharts.html" width="420" height="220" allowTransparency="true" style="background-color:transparent;border: 0"></iframe>
+    <iframe src="Server_performance.html" width="695" height="390" allowTransparency="true" style="background-color:transparent;border: 0;border-radius: 15px;"></iframe>
+    <iframe src="SQL_performance.html" width="235" height="180" allowTransparency="true" style="background-color:transparent;border: 0;border-radius: 15px;"></iframe>
+</div>
+
+<div id="footer" style="background-color:#FFA500;clear:both;text-align:center;">
+    <p>Copyright © 2014 - 2017 OEASY. All Use Rights Reserved</p>
+    <p>深圳市零壹移动互联系统有限公司 永久使用权</p>
+    <p>作者 赵家启</p>
+</div>
+
+<script language="javascript">
+function getCurDate(){
+    var d = new Date();
+    var week;
+    switch (d.getDay()){
+        case 1: week="星期一"; break;
+        case 2: week="星期二"; break;
+        case 3: week="星期三"; break;
+        case 4: week="星期四"; break;
+        case 5: week="星期五"; break;
+        case 6: week="星期六"; break;
+        default: week="星期天";
+    }
+    var years = d.getFullYear();
+    var month = add_zero(d.getMonth()+1);
+    var days = add_zero(d.getDate());
+    var hours = add_zero(d.getHours());
+    var minutes = add_zero(d.getMinutes());
+    var seconds=add_zero(d.getSeconds());
+    var ndate = years+"年"+month+"月"+days+"日 "+hours+":"+minutes+":"+seconds+" "+week;
+    var divT=document.getElementById("divT");
+    divT.innerHTML= ndate;
+}
+
+function add_zero(temp){
+    if(temp<10) return "0"+temp;
+    else return temp;
+}
+
+setInterval("getCurDate()",100);
+</script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>接口测试 - 断言</title>
+    <script type="text/javascript" charset="gbk" src="{% static "js/jquery-1.4.4.min.js" %}"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    {#    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">#}
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/static/css/fileinput.min.css">
+    {#    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">#}
+    <script type="text/javascript" charset="gbk" src="{% static "js/fileinput.min.js" %}"></script>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            set_para();
+        };
+    </script>
+</head>
+
+<body>
+<form id="form_assert_window" method="post" action='/save_assert_suit/{{ edit_id }}/'>
+    {% csrf_token %}
+    <div class="modal-body">
+
+    {% for rec in assert_list %}
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="background-color: blanchedalmond;font-size: 12px">使用新接口</span>
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-warning" id="new" style="font-size: 12px" onclick="show_new()">
+                                    <input type="radio" class="is_new" name="is_new" id="new1" value="1">是
+                                </label>
+                                <label class="btn btn-warning" id="not_new" style="font-size: 12px" onclick="show_old()">
+                                    <input type="radio" class="is_new" name="is_new" id="not_new1" value="0">否
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{#            <div class="col-md-2">#}
+{#                <div class="form-group">#}
+{#                    <div class="col-md-12">#}
+{#                        <button type="submit" class="btn btn-danger btn-sm" id="submit" value="submit" style="width: 100px">保存</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+        </div>
+
+        <div class="row" id="new_div1">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="font-size: 12px">头信息</span>
+                                <textarea id="head" name="head" rows="6" style="width: 255px;font-size: 12px"
+                                          placeholder='说明：&#10;1、格式：{"key1":"value1","key2":"value2"}&#10;2、头信息为空则写为：{}&#10;3、必填头信息：Accept、Content-Type、Cookie'
+                                          spellcheck="false">{{ head1 }}</textarea>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="font-size: 12px">请求方式</span>
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-warning" id="GET" style="font-size: 12px">
+                                    <input type="radio" class="mode" name="mode" id="GET1" value="GET">GET
+                                </label>
+                                <label class="btn btn-warning" id="POST" style="font-size: 12px">
+                                    <input type="radio" class="mode" name="mode" id="POST1" value="POST">POST
+                                </label>
+                                <label class="btn btn-warning" id="UPLOAD_PIC" style="font-size: 12px">
+                                    <input type="radio" class="mode" name="mode" id="UPLOAD_PIC1" value="UPLOAD_PIC">UPLOAD_PIC
+                                </label>
+                            </div>
+                        </div>
+                        <span style="font-size: 12px">* 如果选择"UPLOAD_PIC"，"Content-Type"的值设为空</span>
+                    </div>
+                    <br>
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="font-size: 12px">是否包含关键字</span>
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-warning" id="contain" style="font-size: 12px">
+                                    <input type="radio" class="is_contain" name="is_contain" id="contain1" value="1">包含
+                                </label>
+                                <label class="btn btn-warning" id="not_contain" style="font-size: 12px">
+                                    <input type="radio" class="is_contain" name="is_contain" id="not_contain1" value="0">不包含
+                                </label>
+                            </div>
+                        </div>
+                        <span style="font-size: 12px">* 删除操作的接口选择“不包含”</span>
+                    </div>
+                    <br>
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <span class="input-group-addon" style="font-size: 12px">匹配关键字</span>
+                            <textarea class="assert_keywords" rows="4" style="width: 235px;font-size: 12px" required="" spellcheck="false">{{ rec.assert_keywords }}</textarea>
+                        </div>
+                        <span style="font-size: 12px">* 匹配新接口返回值中的信息</span>
+                    </div>
+                    <br>
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <textarea class="formated_dict" name="formated_dict" rows="4" style="width: 460px;font-size: 12px;display: none" spellcheck="false">{{ para_dict }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3" style="position: relative">
+                <div style="width: 300px;background-color: #eaebee;border: 1px solid;border-radius:2px;text-align: center;">接口请求参数</div>
+                <textarea class="original_body" rows="15" style="width: 300px;font-size: 12px"
+                          placeholder='请输入原始参数。说明：&#10;1、支持多种参数格式；&#10;2、参数只支持：字母、数字、下划线、中文。如果一个参数有多个值，则每个值之间以,分隔。'
+                          required="" spellcheck="false">{{ para_str }}</textarea>
+                <br><br>
+                <div class="input-group">
+                    <span class="input-group-addon" style="font-size: 12px">请求参数格式</span>
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-warning" id="is_FORM" style="font-size: 12px">
+                            <input type="radio" class="assert_body_format" name="assert_body_format" id="is_FORM1" value="0">FORM
+                        </label>
+                        <label class="btn btn-warning" id="is_JSON" style="font-size: 12px">
+                            <input type="radio" class="assert_body_format" name="assert_body_format" id="is_JSON1" value="1">JSON
+                        </label>
+                    </div>
+                </div>
+                <span style="font-size: 12px">* 如果选择JSON，"Content-Type"请填写"application/json; charset=utf-8"</span>
+            </div>
+            <div class="col-md-1" style="position: relative;margin-left: -40px;margin-top: 150px">
+                <button type="button" class="btn btn-primary" onclick="format_body_assert(this)">格式化参数<br>→</button>
+            </div>
+            <div class="col-md-3" style="position: relative;margin-left: -10px">
+                <div style="width: 300px;background-color: #eaebee;border: 1px solid;border-radius:2px;text-align: center">
+                    接口请求参数
+                </div>
+                <textarea class="formated_str" rows="20" style="width: 300px;font-size: 12px" disabled="disabled" placeholder='请点击"格式化参数"，等待输出结果' required="" spellcheck="false">{{ para_str }}</textarea>
+            </div>
+
+            <div class="col-md-2" style="width: 260px">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <caption>关键字列表</caption>
+                        <thead style="display: table;width: 100%;table-layout: fixed;">
+                            <tr>
+                                <th style="width: 30px;text-align: center;font-size: 12px">#</th>
+                                <th style="width: 50px;text-align: center;font-size: 12px">关键字</th>
+                                <th style="width: 50px;text-align: center;font-size: 12px">所属模块</th>
+                                <th style="text-align: center;font-size: 12px">类型</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tbody_add" style="overflow-y: scroll;height: 240px;display: block;">
+                        {% for rec in public_list %}
+                            <tr style="display: table;width: 100%;table-layout: fixed;">
+                                <td style="width: 30px;white-space: normal;text-align: center;font-size: 12px">{{ forloop.counter }}</td>
+                                <td style="width: 50px;word-break:break-all;text-align: center;font-size: 12px">{{ rec.keywords }}</td>
+                                <td style="width: 50px;word-break:break-all;text-align: center;font-size: 12px">{{ rec.module }}</td>
+                                <td style="white-space: normal;overflow: hidden;text-align: center;font-size: 12px">{{ rec.type }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <span style="font-size: 10px;margin-top: -30px">* 关键字用于头信息、接口请求参数、断言匹配关键字</span><br>
+                <span style="font-size: 10px;color: #FFA500">* 关键字引用格式：<span style="color: blue">{</span><span style="color: darkgoldenrod">关键字</span><span style="color: blue">}</span></span>
+            </div>
+        </div>
+
+        <br>
+        <div class="row" id="new_div2">
+            <div class="col-md-12">
+                <div class="input-group">
+                    <span class="input-group-addon">URL</span>
+                    <input id="assert_url" type="url" class="form-control" required="" value="{{ rec.assert_url }}" oninvalid="setCustomValidity('请填写正确的URL');" oninput="setCustomValidity('');" spellcheck="false">
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="old_div1">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">匹配关键字</span>
+                            <textarea class="assert_keywords_old" rows="22" style="width: 350px;font-size: 12px" required="" spellcheck="false">{{ rec.assert_keywords_old }}</textarea>
+                        </div>
+                        <span style="font-size: 12px">* 匹配该接口返回值中的信息</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2" style="margin-top: -20px;width: 260px">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <caption>关键字列表</caption>
+                        <thead style="display: table;width: 100%;table-layout: fixed;">
+                            <tr>
+                                <th style="width: 30px;text-align: center;font-size: 12px">#</th>
+                                <th style="width: 50px;text-align: center;font-size: 12px">关键字</th>
+                                <th style="width: 50px;text-align: center;font-size: 12px">所属模块</th>
+                                <th style="text-align: center;font-size: 12px">类型</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tbody_add" style="overflow-y: scroll;height: 280px;display: block;">
+                        {% for rec in public_list %}
+                            <tr style="display: table;width: 100%;table-layout: fixed;">
+                                <td style="width: 30px;white-space: normal;text-align: center;font-size: 12px">{{ forloop.counter }}</td>
+                                <td style="width: 50px;word-break:break-all;text-align: center;font-size: 12px">{{ rec.keywords }}</td>
+                                <td style="width: 50px;word-break:break-all;text-align: center;font-size: 12px">{{ rec.module }}</td>
+                                <td style="white-space: normal;overflow: hidden;text-align: center;font-size: 12px">{{ rec.type }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <span style="font-size: 10px;margin-top: -30px">* 关键字用于头信息、接口请求参数、断言匹配关键字</span><br>
+                <span style="font-size: 10px;color: #FFA500">* 关键字引用格式：<span style="color: blue">{</span><span style="color: darkgoldenrod">关键字</span><span style="color: blue">}</span></span>
+            </div>
+        </div>
+
+    {% endfor %}
+    </div>
+</form>
+
+<script type="text/javascript">
+    function set_para(ele) {
+        var is_new = {{ is_new|safe }};
+        if(is_new != false || is_new == 0){     //js中0在条件判断的时候等于false，所以要加个或条件包含0的情况
+            $('#new').attr('class', 'btn btn-warning');    //清除其他模态框中的选中状态
+            $('#not_new').attr('class', 'btn btn-warning');
+            if (is_new == '1') {
+                $('#new').attr('class', 'btn btn-warning active');
+                $('#new1').attr('checked', true);
+            }
+            else if (is_new == '0') {
+                $('#not_new').attr('class', 'btn btn-warning active');
+                $('#not_new1').attr('checked', true);
+            }
+        }
+
+        var mode = {{ mode|safe }};
+        if(mode != false) {
+            var mode_val = mode.textContent.replace(/\s+/g, "");     //mode的去掉所以空格
+            $('#GET').attr('class', 'btn btn-warning');    //清除其他模态框中的选中状态
+            $('#POST').attr('class', 'btn btn-warning');
+            $('#UPLOAD_PIC').attr('class', 'btn btn-warning');
+            if (mode_val == 'GET') {
+                $('#GET').attr('class', 'btn btn-warning active');
+                $('#GET1').attr('checked', true);
+            }
+            else if (mode_val == 'POST') {
+                $('#POST').attr('class', 'btn btn-warning active');
+                $('#POST1').attr('checked', true);
+            }
+            else if (mode_val == 'UPLOAD_PIC') {
+                $('#UPLOAD_PIC').attr('class', 'btn btn-warning active');
+                $('#UPLOAD_PIC1').attr('checked', true);
+            }
+        }
+
+        var is_contain = {{ is_contain|safe }};
+        if(is_contain != false || is_contain == 0) {
+            $('#contain').attr('class', 'btn btn-warning');    //清除其他模态框中的选中状态
+            $('#not_contain').attr('class', 'btn btn-warning');
+            if (is_contain == '1') {
+                $('#contain').attr('class', 'btn btn-warning active');
+                $('#contain1').attr('checked', true);
+            }
+            else if (is_contain == '0') {
+                $('#not_contain').attr('class', 'btn btn-warning active');
+                $('#not_contain1').attr('checked', true);
+            }
+        }
+
+        var assert_body_format = {{ assert_body_format|safe }};
+        if(assert_body_format != false || assert_body_format == 0){
+            $('#is_FORM').attr('class', 'btn btn-warning');    //清除其他模态框中的选中状态
+            $('#is_JSON').attr('class', 'btn btn-warning');
+            if (assert_body_format == '0') {
+                $('#is_FORM').attr('class', 'btn btn-warning active');
+                $('#is_FORM1').attr('checked', true);
+            }
+            else if (assert_body_format == '1') {
+                $('#is_JSON').attr('class', 'btn btn-warning active');
+                $('#is_JSON1').attr('checked', true);
+            }
+        }
+
+        if (is_new == '1') {
+            $('#new_div1').show();
+            $('#new_div2').show();
+            $('#old_div1').hide();
+        }
+        else if (is_new == '0') {
+            $('#new_div1').hide();
+            $('#new_div2').hide();
+            $('#old_div1').show();
+        }
+    }
+
+    function show_new(ele) {
+        $('#new_div1').show();
+        $('#new_div2').show();
+        $('#old_div1').hide();
+    }
+
+    function show_old(ele) {
+        $('#new_div1').hide();
+        $('#new_div2').hide();
+        $('#old_div1').show();
+    }
+
+    function format_body_assert(ele) {
+        $('.formated_str').empty();
+        $('.formated_dict').empty();
+        var original_body = $('.original_body').val();
+        console.log(original_body);
+
+        $.ajax({
+            url: "/format_body/",
+            data: JSON.stringify({ // JSON格式封装数据
+                original_body: original_body,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }),
+            headers:{'X-CSRFToken': '{{ csrf_token }}'}, //csrf
+            contentType: 'application/json;charset=utf-8',
+            type: "POST",
+            traditional: true, // 需要传递列表、字典时加上这句
+            success: function (result) {
+                $('.formated_str').append(decodeURIComponent(result['json_str']));
+                $('.formated_dict').append(decodeURIComponent(result['json_dict']));
+                console.log(result['json_dict']);
+            },
+            fail: function (result) {
+                debugger
+            }
+        });
+    }
+</script>
+</body>
+</html>

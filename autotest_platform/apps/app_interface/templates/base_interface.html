@@ -1,0 +1,375 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <style>
+{#        .inner{width: 1630px;margin: 0 auto; overflow: hidden;margin-left: 200px;margin-top: 40px}#}
+        .inner{margin: 10px 10px auto; overflow: hidden;}
+{#        .leftBox {#}
+{#            float: left;#}
+{#            width: 45%;#}
+{#        }#}
+{#        .rightBox {#}
+{#            float: right;#}
+{#            width: 42%;#}
+{#        }#}
+        .textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 0;
+            height: 550px;
+        }
+    </style>
+
+    <script type="text/javascript" charset="gbk" src="{% static "js/jquery-1.4.4.min.js" %}"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+{#    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">#}
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/static/css/fileinput.min.css">
+{#    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">#}
+    <script type="text/javascript" charset="gbk" src="{% static "js/fileinput.min.js" %}"></script>
+
+    <script type="text/javascript">
+        //全局变量
+        var numCount;       //数据总数量
+        var columnsCounts;  //数据列数量
+        var pageCount;      //每页显示的数量
+        var pageNum;        //总页数
+        var currPageNum;   //当前页数
+
+        //页面标签变量
+        var blockTable;
+        var preSpan;
+        var firstSpan;
+        var nextSpan;
+        var lastSpan;
+        var pageNumSpan;
+        var currPageSpan;
+
+
+        window.onload = function () {
+            //页面标签变量
+            blockTable = document.getElementById("blocks");
+            preSpan = document.getElementById("spanPre");
+            firstSpan = document.getElementById("spanFirst");
+            nextSpan = document.getElementById("spanNext");
+            lastSpan = document.getElementById("spanLast");
+            pageNumSpan = document.getElementById("spanTotalPage");
+            currPageSpan = document.getElementById("spanPageNum");
+
+            numCount = document.getElementById("blocks").rows.length - 1;       //取table的行数作为数据总数量（减去标题行1）
+            columnsCounts = blockTable.rows[0].cells.length;
+            pageCount = 12;
+            pageNum = parseInt(numCount / pageCount);
+            if (0 != numCount % pageCount) {
+                pageNum += 1;
+            }
+
+            firstPage();
+
+            //全选
+            var OtherCheck = document.getElementById('othercheck');
+            var CheckBox = document.getElementsByName('chk');
+            OtherCheck.onclick = function () {
+                for (i = 0; i < CheckBox.length; i++) {
+                    if (CheckBox[i].checked == true) {
+                        CheckBox[i].checked = false;
+                    }
+                    else {
+                        CheckBox[i].checked = true
+                    }
+                }
+            };
+        };
+    </script>
+</head>
+
+<body>
+<div class="inner">
+    {% block content %}{% endblock %}
+</div>
+
+{#<script src="/static/js/jquery.cookie.js"></script>#}
+<script type="text/javascript">
+
+    function show_public_para(ele) {
+        var frameSrc = "/show_public_para/";
+        $("#frame_public_window").attr("src", frameSrc);
+        $('#public_para').modal();
+    }
+
+    function show_add_window(module) {
+        var frameSrc = "/show_add_window/"+module+"/";
+        $("#frame_add_window").attr("src", frameSrc);
+        $('#add_window').modal();
+    }
+
+    function show_edit_interface(ele,id,module) {
+        var frameSrc = "/show_edit_interface/"+id+"/"+module+"/";
+        $("#frame_edit_window").attr("src", frameSrc);
+        $('#edit_window').modal();
+    }
+
+    function show_assert(ele,edit_id) {
+        var frameSrc = "/show_assert/" + edit_id + "/";
+        $("#frame_assert_window").attr("src", frameSrc);
+        $('#assert_window').modal();
+    }
+
+    $('#del_window').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // 触发事件的按钮
+        var recipient = button.data('whatever');// 解析出data-whatever内容
+        console.log(recipient);
+        var modal = $(this);
+        modal.find('.modal-title').text('即将删除接口： ' + recipient);
+        modal.find('.modal-body input').val(recipient)
+    });
+
+    function del_interfaces(ele) {
+        var id_interface = $('#del_window').find('.modal-title')[0].textContent;
+        var id_tmp = id_interface.split("_")[0];
+        var id1 = id_tmp.split("：")[1];
+        console.log(id1);
+
+        $.ajax({
+            url: "/del_interfaces/",
+            data: JSON.stringify({ // JSON格式封装数据
+                id1: id1,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }),
+            headers:{'X-CSRFToken': '{{ csrf_token }}'}, //csrf
+            contentType: 'application/json;charset=utf-8',
+            type: "POST",
+            traditional: true, // 需要传递列表、字典时加上这句
+            success: function (result) {
+                window.location.reload(true);
+                console.log(result);
+            },
+            fail: function (result) {
+                debugger
+            }
+        });
+    }
+
+    function start_interface_test(ele) {
+        $('.textarea').empty();
+        var id1 = $(ele).parent().parent().parent().find('td')[2].textContent;
+        var name1 = $(ele).parent().parent().parent().find('td')[3].textContent;
+        console.log(id1);
+        $('.textarea').append('正在测试接口： ' + id1 + '_' + name1 + '\n');
+        $('.textarea').append('请稍等... \n\n');
+
+        $.ajax({
+            url: "/start_interface_test/",
+            data: JSON.stringify({ //JSON格式封装数据
+                id1: id1,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }),
+            headers:{'X-CSRFToken': '{{ csrf_token }}'}, //csrf
+            contentType: 'application/json',
+            type: "POST",
+            traditional: true, // 需要传递列表、字典时加上这句
+            success: function (result) {
+                $('.textarea').append('执行完成，结果如下：\n\n\n');
+                $('.textarea').append(result);
+                console.log(result);
+            },
+            fail: function (result) {
+            }
+        });
+    }
+
+    var num = 0;
+    function start_interface_test_AI(ele) {
+        $('.textarea').empty();
+        var id1 = $(ele).parent().parent().parent().find('td')[2].textContent;
+        var name1 = $(ele).parent().parent().parent().find('td')[3].textContent;
+        console.log(id1);
+        $('.textarea').append('开始执行AI测试： ' + id1 + '_' + name1 + '\n');
+        $('.textarea').append('请稍等... \n\n');
+
+        $.ajax({
+            url: "/start_interface_test_AI/",
+            data: JSON.stringify({ //JSON格式封装数据
+                id1: id1,
+                num: num,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }),
+            headers:{'X-CSRFToken': '{{ csrf_token }}'}, //csrf
+            contentType: 'application/json',
+            type: "POST",
+            traditional: true, // 需要传递列表、字典时加上这句
+            success: function (result) {
+                //回调textarea
+                $('.textarea').append('执行完成，结果如下：\n\n');
+                $('.textarea').append(result['test_log']);         //一次性往textarea增加内容，不影响后台计算速度
+{#                var ele1 = document.getElementById("textarea");    //递归往textarea增加内容，不能用$('.textarea').append()，没有效果。影响后台计算速度，会造成页面卡顿，后台计算慢#}
+{#                ele1.value = ele1.value + result['test_log'];#}
+                //递归
+                if(num < parseInt(result['sum'])){
+                    num += 1;
+                    start_interface_test_AI(ele)
+                }
+                else {
+                    num = 0
+                }
+            },
+            fail: function (result) {
+            }
+        });
+    }
+
+    function firstPage() {
+        hide();
+        currPageNum = 1;
+        showCurrPage(currPageNum);
+        showTotalPage();
+        for (i = 1; i < pageCount + 1; i++) {
+            blockTable.rows[i].style.display = "";
+        }
+
+        firstText();
+        preText();
+        nextLink();
+        lastLink();
+    }
+
+    function prePage() {
+        hide();
+        currPageNum--;
+        showCurrPage(currPageNum);
+        showTotalPage();
+        var firstR = firstRow(currPageNum);
+        var lastR = lastRow(firstR);
+        for (i = firstR; i < lastR; i++) {
+            blockTable.rows[i].style.display = "";
+        }
+
+        if (1 == currPageNum) {
+            firstText();
+            preText();
+            nextLink();
+            lastLink();
+        } else if (pageNum == currPageNum) {
+            preLink();
+            firstLink();
+            nextText();
+            lastText();
+        } else {
+            firstLink();
+            preLink();
+            nextLink();
+            lastLink();
+        }
+
+    }
+
+    function nextPage() {
+        hide();
+        currPageNum++;
+        showCurrPage(currPageNum);
+        showTotalPage();
+        var firstR = firstRow(currPageNum);
+        var lastR = lastRow(firstR);
+        for (i = firstR; i < lastR; i++) {
+            blockTable.rows[i].style.display = "";
+        }
+
+        if (1 == currPageNum) {
+            firstText();
+            preText();
+            nextLink();
+            lastLink();
+        } else if (pageNum == currPageNum) {
+            preLink();
+            firstLink();
+            nextText();
+            lastText();
+        } else {
+            firstLink();
+            preLink();
+            nextLink();
+            lastLink();
+        }
+    }
+
+    function lastPage() {
+        hide();
+        currPageNum = pageNum;
+        showCurrPage(currPageNum);
+        showTotalPage();
+        var firstR = firstRow(currPageNum);
+        for (i = firstR; i < numCount + 1; i++) {
+            blockTable.rows[i].style.display = "";
+        }
+
+        firstLink();
+        preLink();
+        nextText();
+        lastText();
+    }
+
+    // 计算将要显示的页面的首行和尾行
+    function firstRow(currPageNum) {
+        return pageCount * (currPageNum - 1) + 1;
+    }
+
+    function lastRow(firstRow) {
+        var lastRow = firstRow + pageCount;
+        if (lastRow > numCount + 1) {
+            lastRow = numCount + 1;
+        }
+        return lastRow;
+    }
+
+    function showCurrPage(cpn) {
+        currPageSpan.innerHTML = cpn;
+    }
+
+    function showTotalPage() {
+        pageNumSpan.innerHTML = pageNum;
+    }
+
+    //隐藏所有行
+    function hide() {
+        for (var i = 1; i < numCount + 1; i++) {
+            blockTable.rows[i].style.display = "none";
+        }
+    }
+
+    //控制首页等功能的显示与不显示
+    function firstLink() {
+        firstSpan.innerHTML = "<a href='javascript:firstPage();'>首页</a>";
+    }
+    function firstText() {
+        firstSpan.innerHTML = "首页";
+    }
+
+    function preLink() {
+        preSpan.innerHTML = "<a href='javascript:prePage();'>上一页</a>";
+    }
+    function preText() {
+        preSpan.innerHTML = "上一页";
+    }
+
+    function nextLink() {
+        nextSpan.innerHTML = "<a href='javascript:nextPage();'>下一页</a>";
+    }
+    function nextText() {
+        nextSpan.innerHTML = "下一页";
+    }
+
+    function lastLink() {
+        lastSpan.innerHTML = "<a href='javascript:lastPage();'>末页</a>";
+    }
+    function lastText() {
+        lastSpan.innerHTML = "末页";
+    }
+</script>
+
+</body>
+</html>
